@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Systematic Volatility Portfolio Process</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-deep: #0d1117;
+  --bg-primary: #141b24;
+  --bg-card: #1a2332;
+  --bg-card-hover: #1e2a3c;
+  --bg-elevated: #222e3f;
+  --border: #2a3a50;
+  --border-subtle: #1e2d42;
+  --text-primary: #e2e8f0;
+  --text-secondary: #8899aa;
+  --text-muted: #556677;
+  --accent-teal: #3ecfb4;
+  --accent-blue: #4a90d9;
+  --accent-gold: #d4a843;
+  --accent-red: #d94a5e;
+  --accent-green: #48b884;
+  --accent-purple: #9b7ad8;
+  --accent-orange: #d98a4a;
+  --node-process: #3a6b9f;
+  --node-decision: #b8942e;
+  --node-output: #2e8b63;
+  --node-gate: #9b3a3a;
+  --node-soft: #8b7a2e;
+  --node-terminal: #5a6a7a;
+  --glow-teal: rgba(62, 207, 180, 0.15);
+  --glow-blue: rgba(74, 144, 217, 0.12);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: 'DM Sans', -apple-system, sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ─── HERO ─── */
+.hero {
+  text-align: center;
+  padding: 80px 40px 50px;
+  background: linear-gradient(180deg, rgba(62,207,180,0.04) 0%, transparent 60%);
+  position: relative;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(62,207,180,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.badge {
+  display: inline-block;
+  padding: 6px 18px;
+  border: 1px solid var(--accent-teal);
+  border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-teal);
+  margin-bottom: 28px;
+  background: rgba(62,207,180,0.06);
+}
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 16px;
+  line-height: 1.15;
+}
+.hero h1 .accent { color: var(--accent-teal); }
+.hero .subtitle {
+  color: var(--text-secondary);
+  font-size: 16px;
+  max-width: 680px;
+  margin: 0 auto 48px;
+  font-weight: 300;
+}
+
+/* ─── STAT CARDS ─── */
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 0 40px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px 32px;
+  text-align: center;
+  min-width: 130px;
+  transition: all 0.3s ease;
+}
+.stat-card:hover {
+  border-color: var(--border-subtle);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+.stat-card .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.stat-card .num.c-teal { color: var(--accent-teal); }
+.stat-card .num.c-gold { color: var(--accent-gold); }
+.stat-card .num.c-green { color: var(--accent-green); }
+.stat-card .num.c-red { color: var(--accent-red); }
+.stat-card .num.c-blue { color: var(--accent-blue); }
+.stat-card .label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ─── THREE-COLUMN CARDS ─── */
+.cards-section {
+  max-width: 1200px;
+  margin: 56px auto 0;
+  padding: 0 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 900px) { .cards-section { grid-template-columns: 1fr; } }
+.info-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+}
+.info-card .card-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.info-card .card-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+.info-card .list-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+}
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot.teal { background: var(--accent-teal); }
+.dot.blue { background: var(--accent-blue); }
+.dot.purple { background: var(--accent-purple); }
+.dot.orange { background: var(--accent-orange); }
+.dot.green { background: var(--accent-green); }
+.dot.red { background: var(--accent-red); }
+.dot.gold { background: var(--accent-gold); }
+
+/* Bar chart in card */
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 5px 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.bar-label { width: 70px; text-align: right; flex-shrink: 0; }
+.bar-track {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-deep);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease;
+}
+
+/* ─── TABS ─── */
+.tabs-section {
+  max-width: 1200px;
+  margin: 64px auto 0;
+  padding: 0 40px;
+}
+.tabs-nav {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 14px 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--text-secondary); }
+.tab-btn.active {
+  color: var(--accent-teal);
+  border-bottom-color: var(--accent-teal);
+}
+.tab-content { display: none; padding-top: 32px; }
+.tab-content.active { display: block; }
+.tab-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+.tab-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+}
+.tag {
+  display: inline-block;
+  padding: 3px 12px;
+  border: 1px solid var(--accent-teal);
+  border-radius: 12px;
+  font-size: 11px;
+  color: var(--accent-teal);
+  font-family: 'JetBrains Mono', monospace;
+}
+.tab-desc {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 28px;
+  max-width: 800px;
+}
+
+/* ─── FLOWCHART ─── */
+.flow-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px;
+  position: relative;
+  overflow-x: auto;
+}
+.flow-stage-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 20px;
+  background: var(--bg-deep);
+}
+.flow-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.flow-node {
+  position: relative;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  min-width: 180px;
+  max-width: 260px;
+  border: 1.5px solid;
+  cursor: default;
+  transition: all 0.2s;
+  z-index: 1;
+}
+.flow-node:hover {
+  transform: scale(1.03);
+  z-index: 2;
+}
+.flow-node.process {
+  background: rgba(58, 107, 159, 0.2);
+  border-color: var(--node-process);
+  color: #a8cce8;
+}
+.flow-node.decision {
+  background: rgba(184, 148, 46, 0.2);
+  border-color: var(--node-decision);
+  color: #e8d48a;
+  transform: rotate(0deg);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  padding: 28px 22px;
+  min-width: 150px;
+}
+.flow-node.decision:hover { transform: scale(1.05); }
+.flow-node.output {
+  background: rgba(46, 139, 99, 0.2);
+  border-color: var(--node-output);
+  color: #8ae8b8;
+  clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+  padding: 10px 28px;
+}
+.flow-node.gate {
+  background: rgba(155, 58, 58, 0.25);
+  border-color: var(--node-gate);
+  color: #e8a8a8;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  padding: 28px 22px;
+  min-width: 150px;
+}
+.flow-node.soft {
+  background: rgba(139, 122, 46, 0.2);
+  border-color: var(--node-soft);
+  color: #e8d88a;
+}
+.flow-node.terminal {
+  background: rgba(90, 106, 122, 0.2);
+  border-color: var(--node-terminal);
+  color: #aabbcc;
+  border-radius: 24px;
+  padding: 8px 24px;
+}
+.flow-arrow {
+  width: 2px;
+  height: 28px;
+  background: linear-gradient(180deg, var(--border) 0%, rgba(42,58,80,0.4) 100%);
+  position: relative;
+}
+.flow-arrow::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: -3px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--border);
+}
+.flow-arrow-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  padding: 0 8px;
+  position: absolute;
+  right: -80px;
+  top: 6px;
+  white-space: nowrap;
+}
+.flow-branch {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  justify-content: center;
+}
+.flow-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.flow-spacer { height: 12px; }
+
+/* Special connector for feedback loops */
+.flow-feedback {
+  height: 28px;
+  border: 2px dashed var(--accent-gold);
+  border-top: none;
+  border-right: none;
+  width: 60px;
+  border-radius: 0 0 0 12px;
+  position: relative;
+  opacity: 0.5;
+}
+
+/* ─── STEP DETAIL TABLE ─── */
+.step-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 24px;
+  font-size: 13px;
+}
+.step-table thead th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-deep);
+  position: sticky;
+  top: 0;
+}
+.step-table tbody tr {
+  transition: background 0.15s;
+}
+.step-table tbody tr:hover {
+  background: rgba(62,207,180,0.03);
+}
+.step-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  vertical-align: top;
+}
+.step-table td:first-child {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+.blocker-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+.blocker-badge.green { background: rgba(72,184,132,0.15); color: var(--accent-green); border: 1px solid rgba(72,184,132,0.3); }
+.blocker-badge.yellow { background: rgba(212,168,67,0.15); color: var(--accent-gold); border: 1px solid rgba(212,168,67,0.3); }
+.blocker-badge.red { background: rgba(217,74,94,0.15); color: var(--accent-red); border: 1px solid rgba(217,74,94,0.3); }
+
+/* ─── REFERENCE TABLES ─── */
+.ref-section {
+  max-width: 1200px;
+  margin: 64px auto 0;
+  padding: 0 40px 80px;
+}
+.ref-section h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  margin-bottom: 24px;
+}
+.ref-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 900px) { .ref-grid { grid-template-columns: 1fr; } }
+.ref-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+}
+.ref-card .ref-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+.ref-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ref-row:last-child { border-bottom: none; }
+.ref-row .k { color: var(--text-primary); font-weight: 600; }
+.ref-row .v { color: var(--text-secondary); text-align: right; max-width: 60%; }
+
+/* ─── SCOPE TABLE ─── */
+.scope-section {
+  max-width: 600px;
+  margin: 48px auto 0;
+}
+.scope-table {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.scope-table .scope-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 16px 20px 8px;
+}
+.scope-row {
+  display: flex;
+  padding: 10px 20px;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 13.5px;
+}
+.scope-row .sk { width: 140px; color: var(--text-primary); font-weight: 600; flex-shrink: 0; }
+.scope-row .sv { color: var(--text-secondary); }
+
+/* ─── COLOR LEGEND ─── */
+.legend-section {
+  max-width: 1200px;
+  margin: 48px auto 0;
+  padding: 0 40px;
+}
+.legend-section h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  margin-bottom: 24px;
+}
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 900px) { .legend-grid { grid-template-columns: 1fr; } }
+.legend-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+}
+.legend-card .legend-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.legend-swatch {
+  width: 20px; height: 14px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.legend-line {
+  width: 24px;
+  height: 2px;
+  flex-shrink: 0;
+}
+.legend-line.solid { background: var(--border); }
+.legend-line.dashed {
+  background: repeating-linear-gradient(90deg, var(--accent-gold) 0 6px, transparent 6px 10px);
+  height: 2px;
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate { animation: fadeUp 0.6s ease forwards; opacity: 0; }
+.d1 { animation-delay: 0.1s; }
+.d2 { animation-delay: 0.2s; }
+.d3 { animation-delay: 0.3s; }
+.d4 { animation-delay: 0.4s; }
+.d5 { animation-delay: 0.5s; }
+
+/* ─── FOOTER ─── */
+.footer {
+  text-align: center;
+  padding: 48px 40px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  border-top: 1px solid var(--border-subtle);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* Tooltip */
+.tooltip-wrap { position: relative; }
+.tooltip-wrap .tooltip-text {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  min-width: 220px;
+  max-width: 300px;
+  z-index: 100;
+  transition: all 0.2s;
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.tooltip-wrap:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ HERO ═══════ -->
+<div class="hero">
+  <div class="badge animate d1">Process Framework V3</div>
+  <h1 class="animate d2">Systematic Volatility <span class="accent">Portfolio Process</span></h1>
+  <p class="subtitle animate d3">Build and manage a dispersion-centric multi-strategy volatility portfolio with signal construction, model calibration, portfolio design, and risk monitoring.</p>
+
+  <div class="stats-row animate d4">
+    <div class="stat-card"><div class="num c-teal">7</div><div class="label">Stages</div></div>
+    <div class="stat-card"><div class="num c-gold">5</div><div class="label">Gates</div></div>
+    <div class="stat-card"><div class="num c-green">8</div><div class="label">Outputs</div></div>
+    <div class="stat-card"><div class="num c-red">3</div><div class="label">Feedback Loops</div></div>
+    <div class="stat-card"><div class="num c-blue">44</div><div class="label">Process Nodes</div></div>
+  </div>
+</div>
+
+<!-- ═══════ THREE-COLUMN CARDS ═══════ -->
+<div class="cards-section animate d5">
+  <div class="info-card">
+    <div class="card-label">Stage Distribution</div>
+    <div class="card-title">7 Stages</div>
+    <div class="list-item"><span class="dot teal"></span>Idea Generation & Signal Construction (Stage 1)</div>
+    <div class="list-item"><span class="dot blue"></span>Research Aggregation & Model Calibration (Stage 2)</div>
+    <div class="list-item"><span class="dot purple"></span>Collaboration & Peer Review (Stage 3)</div>
+    <div class="list-item"><span class="dot green"></span>Thesis Development & Portfolio Design (Stage 4)</div>
+    <div class="list-item"><span class="dot orange"></span>Decision, Approval & Execution (Stage 5)</div>
+    <div class="list-item"><span class="dot red"></span>Monitoring (Stage 6)</div>
+    <div class="list-item"><span class="dot gold"></span>Rebalancing & Reporting (Stage 7)</div>
+  </div>
+  <div class="info-card">
+    <div class="card-label">Gate Architecture</div>
+    <div class="card-title">5 Gates</div>
+    <div class="list-item"><span class="dot blue"></span>Signal Quality Review</div>
+    <div class="list-item"><span class="dot gold"></span>Investment Committee Approval (3-way)</div>
+    <div class="list-item"><span class="dot orange"></span>Compliance Clearance</div>
+    <div class="list-item"><span class="dot green"></span>Thesis Drift Assessment</div>
+    <div class="list-item"><span class="dot red"></span>Rebalance Approval</div>
+  </div>
+  <div class="info-card">
+    <div class="card-label">Node Type Breakdown</div>
+    <div class="card-title" style="margin-bottom:14px;">44 Nodes</div>
+    <div class="bar-row"><span class="bar-label">Process</span><div class="bar-track"><div class="bar-fill" style="width:70%;background:var(--accent-blue);"></div></div></div>
+    <div class="bar-row"><span class="bar-label">Decision</span><div class="bar-track"><div class="bar-fill" style="width:18%;background:var(--accent-gold);"></div></div></div>
+    <div class="bar-row"><span class="bar-label">Output</span><div class="bar-track"><div class="bar-fill" style="width:20%;background:var(--accent-green);"></div></div></div>
+    <div class="bar-row"><span class="bar-label">Gate</span><div class="bar-track"><div class="bar-fill" style="width:11%;background:var(--accent-red);"></div></div></div>
+    <div class="bar-row"><span class="bar-label">Soft Block</span><div class="bar-track"><div class="bar-fill" style="width:18%;background:var(--accent-orange);"></div></div></div>
+    <div class="bar-row"><span class="bar-label">Terminal</span><div class="bar-track"><div class="bar-fill" style="width:5%;background:var(--node-terminal);"></div></div></div>
+  </div>
+</div>
+
+<!-- ═══════ TABS ═══════ -->
+<div class="tabs-section">
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="switchTab('master')">Master Flow</button>
+    <button class="tab-btn" onclick="switchTab('s12')">Stages 1–2</button>
+    <button class="tab-btn" onclick="switchTab('s3')">Stage 3</button>
+    <button class="tab-btn" onclick="switchTab('s4')">Stage 4</button>
+    <button class="tab-btn" onclick="switchTab('s56')">Stages 5–6</button>
+    <button class="tab-btn" onclick="switchTab('s7')">Stage 7</button>
+  </div>
+
+  <!-- ─── MASTER FLOW ─── -->
+  <div class="tab-content active" id="tab-master">
+    <div class="tab-header"><h2>Master Portfolio Workflow</h2><span class="tag">End-to-End</span></div>
+    <p class="tab-desc">Complete 7-stage process from signal construction through portfolio monitoring and rebalancing. All gates, feedback loops, and output documents shown.</p>
+    <div class="flow-container">
+      <div class="flow-col">
+        <div class="flow-node terminal">START</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-stage-label">Stage 1: Idea Generation & Signal Construction</div>
+        <div class="flow-node process">1.1 Define Universe</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">1.2 Compute Correlations</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">1.3 Dispersion Z-Score</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node soft">1.4 Classify Volatility Regime</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">1.5 Generate Entry Signals</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node soft">1.6 Screen Idiosyncratic Opportunities</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node output">Eligible Trade Universe</div>
+        <div class="flow-arrow"></div>
+
+        <div class="flow-stage-label">Stage 2: Research & Model Calibration</div>
+        <div class="flow-node process">2.1 Calibrate Stochastic Vol Model</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">2.2 Estimate Correlation Matrix</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">2.3 Build Greeks Engine</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">2.4 Backtest Dispersion Strategy</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node soft">2.5 Aggregate Sell-Side Research</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node output">Calibrated Models & Backtest Report</div>
+        <div class="flow-arrow"></div>
+
+        <div class="flow-stage-label">Stage 3: Collaboration & Peer Review</div>
+        <div class="flow-node process">3.1 Review Signal Quality</div>
+        <div class="flow-arrow"><span class="flow-arrow-label">Signal Quality Gate</span></div>
+        <div class="flow-node process">3.2 Stress-Test Correlation Matrix</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">3.3 Evaluate Vol Harvesting Overlay</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">3.4 Formulate Directional Vol Views</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node soft">3.5 Assess Counterparty & ISDA Docs</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node output">Stress Test Results & Peer Review</div>
+        <div class="flow-arrow"></div>
+
+        <div class="flow-stage-label">Stage 4: Thesis Development & Portfolio Design</div>
+        <div class="flow-node process">4.1 Draft Investment Thesis Memo</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">4.2 Design Index Short Vol Leg</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">4.3 Design Constituent Long Vol Leg</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">4.4 Verify Portfolio Greeks & Constraints</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">4.5 Specify Vol-Targeting Framework</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">4.6 Design Tail-Risk Hedging Overlay</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">4.7 Run Full Scenario Analysis</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">4.8 Design Attribution Methodology</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">4.9 Finalize IC Memorandum</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node output">Investment Committee Memorandum</div>
+        <div class="flow-arrow"></div>
+
+        <div class="flow-stage-label">Stage 5: Decision, Approval & Execution</div>
+        <div class="flow-node process">5.1 Present to Investment Committee</div>
+        <div class="flow-arrow"></div>
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="flow-node" style="background:rgba(184,148,46,0.25);border:2px solid var(--node-decision);color:#e8d48a;padding:16px 24px;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);min-width:170px;text-align:center;">5.2 IC Approval?</div>
+          <div style="display:flex;gap:60px;margin-top:8px;">
+            <span style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;">Approved</span>
+            <span style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;">No → Kill</span>
+            <span style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;">Conditional</span>
+          </div>
+        </div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node soft">5.3 Compliance Clearance</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">5.4 Generate Execution Schedule</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node" style="background:rgba(155,58,58,0.2);border:1.5px solid var(--node-gate);color:#e8a8a8;">5.5 Execute Index Option Legs</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node" style="background:rgba(155,58,58,0.2);border:1.5px solid var(--node-gate);color:#e8a8a8;">5.6 Execute Constituent & OTC Legs</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node" style="background:rgba(155,58,58,0.2);border:1.5px solid var(--node-gate);color:#e8a8a8;">5.7 Reconcile Trades & Margin</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node output">Live Portfolio</div>
+        <div class="flow-arrow"></div>
+
+        <div class="flow-stage-label">Stage 6: Monitoring</div>
+        <div class="flow-node soft">6.1 Monitor Portfolio Greeks Daily</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node soft">6.2 Track Dispersion PnL Attribution</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node soft">6.3 Update Regime Classification</div>
+        <div class="flow-arrow"></div>
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="flow-node" style="background:rgba(184,148,46,0.25);border:2px solid var(--node-decision);color:#e8d48a;padding:16px 24px;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);min-width:170px;text-align:center;">6.4 Thesis Drift?</div>
+          <div style="display:flex;gap:40px;margin-top:8px;">
+            <span style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;">Maintain</span>
+            <span style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;">Adjust</span>
+            <span style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;">Unwind</span>
+          </div>
+        </div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">6.5 Weekly Tail-Risk Diagnostic</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">6.6 Manage Earnings Events</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node output">Daily Risk Reports & Attribution</div>
+        <div class="flow-arrow"></div>
+
+        <div class="flow-stage-label">Stage 7: Rebalancing & Reporting</div>
+        <div class="flow-node process">7.1 Compute Optimal Rebalancing Trades</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">7.2 Adjust Vol-Target Leverage</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">7.3 Approve Rebalancing Package</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node" style="background:rgba(155,58,58,0.2);border:1.5px solid var(--node-gate);color:#e8a8a8;">7.4 Execute Rebalancing Trades</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">7.5 Post-Rebalance Verification</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node process">7.6 Prepare Monthly Investor Report</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node output">Rebalance Package & Investor Report</div>
+        <div class="flow-arrow"></div>
+
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="flow-node" style="background:rgba(184,148,46,0.25);border:2px solid var(--node-decision);color:#e8d48a;padding:16px 24px;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);min-width:180px;text-align:center;">Action Decision</div>
+          <div style="display:flex;gap:30px;margin-top:8px;">
+            <span style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;">Hold</span>
+            <span style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;">Rebalance</span>
+            <span style="font-size:11px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;">Fundamental</span>
+          </div>
+        </div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node output">Performance Report</div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node terminal">END / NEXT CYCLE</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── STAGES 1–2 ─── -->
+  <div class="tab-content" id="tab-s12">
+    <div class="tab-header"><h2>Signal Construction & Model Calibration</h2><span class="tag">Stages 1–2</span></div>
+    <p class="tab-desc">Define the dispersion trade universe, compute correlation signals, classify the volatility regime, calibrate stochastic models, and backtest the strategy with realistic transaction costs.</p>
+    <div class="flow-container">
+      <div style="overflow-x:auto;">
+        <table class="step-table">
+          <thead>
+            <tr><th>#</th><th>Step</th><th>Actor</th><th>Blocker</th><th>Inputs</th><th>Outputs</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1.1</td><td>Define dispersion trade universe — select target equity index and top liquid constituents ranked by option volume, open interest, and bid-ask spread quality</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Index membership, option liquidity data</td><td>Eligible universe of 30–50 names</td></tr>
+            <tr><td>1.2</td><td>Compute historical realized correlation versus implied correlation across multiple lookback windows (30d, 60d, 90d, 1y)</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Daily returns, implied vol surfaces</td><td>Correlation time-series, mean-reversion parameters</td></tr>
+            <tr><td>1.3</td><td>Calculate implied correlation from index implied volatility and constituent implied volatilities using Markowitz variance framework</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Index/constituent vol surfaces, weight vector</td><td>Dispersion Z-score, percentile rank</td></tr>
+            <tr><td>1.4</td><td>Classify current volatility regime using VIX term structure slope, realized-vs-implied spread, and volatility-of-volatility level</td><td>Quant Researcher</td><td><span class="blocker-badge yellow">Soft Blocker</span></td><td>VIX spot + futures curve, historical RV, VVIX</td><td>Regime: low / normal / elevated / crisis</td></tr>
+            <tr><td>1.5</td><td>Generate entry signals for dispersion trades based on Z-score thresholds, regime filters, and sector concentration constraints</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Z-score, regime, thresholds, sector limits</td><td>Trade signals with conviction scores</td></tr>
+            <tr><td>1.6</td><td>Screen for idiosyncratic volatility opportunities — names with elevated RV-IV differential, upcoming earnings, or corporate events</td><td>Quant Researcher</td><td><span class="blocker-badge yellow">Soft Blocker</span></td><td>Constituent vols, earnings calendar, events DB</td><td>Ranked single-stock opportunity list</td></tr>
+            <tr style="background:rgba(46,139,99,0.06);"><td></td><td colspan="5" style="color:var(--accent-green);font-weight:600;">↳ Output: Eligible Trade Universe</td></tr>
+            <tr><td>2.1</td><td>Calibrate stochastic volatility model (SABR or Heston) to index and each constituent implied volatility surface</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Market vol surfaces, model spec</td><td>Calibrated parameters, error stats</td></tr>
+            <tr><td>2.2</td><td>Estimate full cross-asset correlation matrix using DCC-GARCH or Ledoit-Wolf shrinkage; decompose into systematic/idiosyncratic components</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>5+ years daily returns</td><td>N×N conditional correlation matrix</td></tr>
+            <tr><td>2.3</td><td>Build comprehensive Greeks engine computing delta, gamma, vega, theta, vanna, and volga for all candidate positions</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Calibrated parameters, spots, rates</td><td>Full Greeks book including cross-Greeks</td></tr>
+            <tr><td>2.4</td><td>Backtest dispersion strategy on 10+ years of data with realistic transaction costs, discrete daily delta hedging, and margin requirements</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Historical option data, cost model, signals</td><td>PnL series, Sharpe, max drawdown, turnover</td></tr>
+            <tr><td>2.5</td><td>Aggregate sell-side volatility research, compile earnings event calendar, catalog macroeconomic events (FOMC, index rebalance, expiration clusters)</td><td>Analyst</td><td><span class="blocker-badge yellow">Soft Blocker</span></td><td>Broker research, economic calendar feeds</td><td>Event risk calendar, vol themes summary</td></tr>
+            <tr style="background:rgba(46,139,99,0.06);"><td></td><td colspan="5" style="color:var(--accent-green);font-weight:600;">↳ Output: Calibrated Models & Backtest Report</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── STAGE 3 ─── -->
+  <div class="tab-content" id="tab-s3">
+    <div class="tab-header"><h2>Collaboration & Peer Review</h2><span class="tag">Stage 3</span></div>
+    <p class="tab-desc">Challenge correlation assumptions, stress-test the portfolio under crisis scenarios, evaluate overlay parameters, formulate directional views, and assess counterparty documentation.</p>
+    <div class="flow-container">
+      <div style="overflow-x:auto;">
+        <table class="step-table">
+          <thead><tr><th>#</th><th>Step</th><th>Actor</th><th>Blocker</th><th>Inputs</th><th>Outputs</th></tr></thead>
+          <tbody>
+            <tr><td>3.1</td><td>Review dispersion signal quality with quant team, challenge correlation assumptions, assess regime classification robustness</td><td>Portfolio Manager</td><td><span class="blocker-badge green">No Blocker</span></td><td>Signals, correlation matrix, regime output, backtest</td><td>Approved/modified parameters, follow-up list</td></tr>
+            <tr><td>3.2</td><td>Stress-test correlation matrix under historical crises (2008 GFC, March 2020 COVID, Aug 2015 China) and hypothetical scenarios (30-pt correlation spike, sector blowup)</td><td>Risk Manager</td><td><span class="blocker-badge green">No Blocker</span></td><td>Correlation matrix, crisis data, portfolio Greeks</td><td>Stressed PnL, vulnerability points, convexity analysis</td></tr>
+            <tr><td>3.3</td><td>Evaluate vol harvesting overlay — short-vol premium targets, structures to sell (straddles, strangles, condors), delta ranges, tenors, stop-loss thresholds</td><td>Portfolio Manager</td><td><span class="blocker-badge green">No Blocker</span></td><td>Historical IV-RV spreads, premium decay data</td><td>Vol harvesting spec: tenors, deltas, sizing, thresholds</td></tr>
+            <tr><td>3.4</td><td>Formulate directional vol positions — long/short views informed by macro regime, VIX term structure, cross-market signals</td><td>PM & Risk Mgr</td><td><span class="blocker-badge green">No Blocker</span></td><td>Regime signals, VIX analysis, cross-market data</td><td>Directional thesis with kill criteria, time horizon</td></tr>
+            <tr><td>3.5</td><td>Assess counterparty risk and ISDA documentation for all OTC derivatives (variance swaps, correlation swaps, capped vol swaps)</td><td>Portfolio Manager</td><td><span class="blocker-badge yellow">Soft Blocker</span></td><td>Counterparty ratings, ISDA masters, notionals</td><td>Counterparty allocation plan, docs checklist</td></tr>
+            <tr style="background:rgba(46,139,99,0.06);"><td></td><td colspan="5" style="color:var(--accent-green);font-weight:600;">↳ Output: Stress Test Results & Peer Review Documentation</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── STAGE 4 ─── -->
+  <div class="tab-content" id="tab-s4">
+    <div class="tab-header"><h2>Thesis Development & Portfolio Design</h2><span class="tag">Stage 4</span></div>
+    <p class="tab-desc">Draft the investment thesis, design each strategy leg (index short vol, constituent long vol, tail hedges), verify Greeks constraints, run scenario analysis, and finalize the Investment Committee memorandum.</p>
+    <div class="flow-container">
+      <div style="overflow-x:auto;">
+        <table class="step-table">
+          <thead><tr><th>#</th><th>Step</th><th>Actor</th><th>Blocker</th><th>Inputs</th><th>Outputs</th></tr></thead>
+          <tbody>
+            <tr><td>4.1</td><td>Draft investment thesis memo — dispersion rationale, base/bull/bear scenarios, correlation mean-reversion thesis, risk factors, kill criteria</td><td>Portfolio Manager</td><td><span class="blocker-badge green">No Blocker</span></td><td>All signals, backtest, regime, stress tests</td><td>Thesis memo (draft) with assumptions & kill criteria</td></tr>
+            <tr><td>4.2</td><td>Design optimal strike and tenor selection for index short vol leg — evaluate ATM straddles, 25Δ strangles, variance swaps across 1M–3M tenors</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Index vol surface, Greeks engine, liquidity data</td><td>Index option structure: strikes, tenors, notionals, Greeks</td></tr>
+            <tr><td>4.3</td><td>Design constituent long vol leg — select names, strikes, tenors to maximize vega-weighted dispersion exposure under sector and position limits</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Constituent surfaces, correlation betas, liquidity</td><td>Constituent structures with full Greeks contribution</td></tr>
+            <tr><td>4.4</td><td>Compute portfolio-level aggregate Greeks — verify vega-neutrality, target gamma, delta bounds, vanna/volga within limits</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Position-level Greeks, risk budget, constraints</td><td>Greeks summary, constraint satisfaction report</td></tr>
+            <tr><td>4.5</td><td>Specify dynamic vol-targeting framework — RV lookback, annualized target, inverse-vol scaling, leverage bounds, rebalance frequency</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Historical portfolio RV, target vol, leverage limits</td><td>Vol-targeting rule set, historical leverage simulation</td></tr>
+            <tr><td>4.6</td><td>Design tail-risk hedging overlay — protective put schedule, collar structures, OTM put spread sizing calibrated to worst-case correlation spike</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Tail-risk budget, skew surface, stress PnL</td><td>Tail-hedge spec: strikes, notionals, roll schedule, cost</td></tr>
+            <tr><td>4.7</td><td>Run full scenario analysis across integrated portfolio — correlation spike (+10/+20/+30), VIX > 40, sector blowup, joint tail events</td><td>Risk Manager</td><td><span class="blocker-badge green">No Blocker</span></td><td>Full portfolio, stress scenarios, correlation matrix</td><td>Scenario PnL table, worst-case drawdown, margin impact</td></tr>
+            <tr><td>4.8</td><td>Design performance attribution methodology — decompose daily PnL into dispersion alpha, vol harvest, directional, tail-hedge carry, hedging slippage, costs</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Portfolio structure, Greeks framework, cost model</td><td>Attribution methodology doc with formulae & template</td></tr>
+            <tr><td>4.9</td><td>Finalize IC memorandum — integrate all strategy legs into single cohesive document with unified risk analytics and implementation plan</td><td>Portfolio Manager</td><td><span class="blocker-badge green">No Blocker</span></td><td>All sub-strategy specs, scenario results, attribution</td><td>Final IC memorandum ready for presentation</td></tr>
+            <tr style="background:rgba(46,139,99,0.06);"><td></td><td colspan="5" style="color:var(--accent-green);font-weight:600;">↳ Output: Investment Committee Memorandum</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── STAGES 5–6 ─── -->
+  <div class="tab-content" id="tab-s56">
+    <div class="tab-header"><h2>Execution & Monitoring</h2><span class="tag">Stages 5–6</span></div>
+    <p class="tab-desc">Present to Investment Committee, obtain approval, execute across exchanges and OTC markets, then monitor Greeks, attribution, regime signals, and earnings events on an ongoing basis.</p>
+    <div class="flow-container">
+      <div style="overflow-x:auto;">
+        <table class="step-table">
+          <thead><tr><th>#</th><th>Step</th><th>Actor</th><th>Blocker</th><th>Inputs</th><th>Outputs</th></tr></thead>
+          <tbody>
+            <tr><td>5.1</td><td>Present complete portfolio proposal to Investment Committee</td><td>Portfolio Manager</td><td><span class="blocker-badge green">No Blocker</span></td><td>IC memorandum, scenario analysis</td><td>Presentation materials with exhibits</td></tr>
+            <tr><td>5.2</td><td>Investment Committee reviews, challenges assumptions, votes on approval (Approved / Conditional / Rejected)</td><td>Inv. Committee</td><td><span class="blocker-badge red">Hard Blocker</span></td><td>Presentation, Q&A discussion</td><td>Formal approval with conditions</td></tr>
+            <tr><td>5.3</td><td>Compliance clearance — check positions against CBOE limits, margin requirements, fund concentration constraints</td><td>Compliance</td><td><span class="blocker-badge yellow">Soft Blocker</span></td><td>Position list, regulatory limits, fund constraints</td><td>Compliance clearance report</td></tr>
+            <tr><td>5.4</td><td>Generate optimal execution schedule — sequence trades to minimize market impact, manage leg risk, account for expiration cycles</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Position list, liquidity profiles, microstructure model</td><td>Execution schedule: sequence, timing, order types, clips</td></tr>
+            <tr><td>5.5</td><td>Execute index option legs through electronic exchange using algorithmic and discretionary limit orders</td><td>Trader</td><td><span class="blocker-badge red">Hard Blocker</span></td><td>Execution schedule, real-time market conditions</td><td>Filled orders, slippage report</td></tr>
+            <tr><td>5.6</td><td>Execute constituent single-stock options and negotiate OTC variance/correlation/capped vol swaps with dealer counterparties</td><td>Trader</td><td><span class="blocker-badge red">Hard Blocker</span></td><td>Execution schedule, dealer quotes, ISDA docs</td><td>Trade & ISDA confirmations</td></tr>
+            <tr><td>5.7</td><td>Reconcile all executed trades, verify position booking accuracy, confirm margin with prime broker</td><td>Operations</td><td><span class="blocker-badge red">Hard Blocker</span></td><td>Trade confirmations, PMS records, PB margin</td><td>Reconciliation report, initial margin posted</td></tr>
+            <tr style="background:rgba(46,139,99,0.06);"><td></td><td colspan="5" style="color:var(--accent-green);font-weight:600;">↳ Output: Live Portfolio</td></tr>
+            <tr><td>6.1</td><td>Monitor portfolio-level and position-level Greeks daily — flag breaches in delta, gamma, vega, or implied correlation exposure</td><td>Risk Manager</td><td><span class="blocker-badge yellow">Soft Blocker</span></td><td>Live position data, Greeks engine, risk limits</td><td>Daily risk report with flagged breaches</td></tr>
+            <tr><td>6.2</td><td>Track realized-vs-implied correlation spread; produce PnL attribution decomposed by strategy leg</td><td>Quant Researcher</td><td><span class="blocker-badge yellow">Soft Blocker</span></td><td>Daily returns, positions, updated vol data</td><td>Daily PnL attribution report</td></tr>
+            <tr><td>6.3</td><td>Update volatility regime classification daily; monitor for transition signals (VIX term structure changes, RV-IV compression)</td><td>Quant Researcher</td><td><span class="blocker-badge yellow">Soft Blocker</span></td><td>Daily VIX data, regime model parameters</td><td>Updated regime signal, transition probability</td></tr>
+            <tr><td>6.4</td><td>Evaluate thesis drift — compare current conditions against original IC memo assumptions (Maintain / Adjust / Unwind)</td><td>Portfolio Manager</td><td><span class="blocker-badge green">No Blocker</span></td><td>Original memo, current data, daily attribution</td><td>Thesis drift assessment with action recommendation</td></tr>
+            <tr><td>6.5</td><td>Run weekly tail-risk diagnostic — check hedge coverage ratio under 3σ move remains above minimum threshold</td><td>Risk Manager</td><td><span class="blocker-badge green">No Blocker</span></td><td>Current hedges, portfolio exposure, skew surface</td><td>Hedge coverage report, roll recommendations</td></tr>
+            <tr><td>6.6</td><td>Manage earnings events for constituent positions — decide to hold/reduce/close ahead of binary events, adjust delta hedges</td><td>Portfolio Manager</td><td><span class="blocker-badge green">No Blocker</span></td><td>Earnings calendar, positions, historical earnings data</td><td>Earnings action plan per constituent</td></tr>
+            <tr style="background:rgba(46,139,99,0.06);"><td></td><td colspan="5" style="color:var(--accent-green);font-weight:600;">↳ Output: Daily Risk Reports & Attribution</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── STAGE 7 ─── -->
+  <div class="tab-content" id="tab-s7">
+    <div class="tab-header"><h2>Rebalancing & Reporting</h2><span class="tag">Stage 7</span></div>
+    <p class="tab-desc">Compute optimal rebalancing trades for expiring positions, adjust vol-target leverage, execute rebalances, verify post-trade positions, and prepare monthly investor reporting.</p>
+    <div class="flow-container">
+      <div style="overflow-x:auto;">
+        <table class="step-table">
+          <thead><tr><th>#</th><th>Step</th><th>Actor</th><th>Blocker</th><th>Inputs</th><th>Outputs</th></tr></thead>
+          <tbody>
+            <tr><td>7.1</td><td>Compute optimal rebalancing trades for expiring positions — account for roll cost, delta/vega drift, universe changes</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Current positions, Greeks drift, expiry schedule, cost model</td><td>Rebalance trade list with sizing and expected cost</td></tr>
+            <tr><td>7.2</td><td>Adjust vol-target leverage multiplier based on trailing realized portfolio volatility versus target</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Trailing RV, target vol, current leverage, framework params</td><td>Updated leverage multiplier, scaling trades</td></tr>
+            <tr><td>7.3</td><td>Review and approve rebalancing package — verify consistency with IC mandate and risk limits</td><td>Portfolio Manager</td><td><span class="blocker-badge green">No Blocker</span></td><td>Rebalance list, risk impact, IC mandate, limits</td><td>Approved rebalance order package</td></tr>
+            <tr><td>7.4</td><td>Execute approved rebalancing trades — roll expiring options, adjust delta hedges, replace tail protection, process leverage scaling</td><td>Trader</td><td><span class="blocker-badge red">Hard Blocker</span></td><td>Approved orders, real-time market</td><td>Filled orders, execution quality report</td></tr>
+            <tr><td>7.5</td><td>Post-rebalance verification — compare actual vs intended portfolio, measure slippage, confirm updated Greeks within targets</td><td>Quant Researcher</td><td><span class="blocker-badge green">No Blocker</span></td><td>Target portfolio, actual executions, market data</td><td>Verification report, updated attribution baseline</td></tr>
+            <tr><td>7.6</td><td>Prepare monthly investor reporting — performance summary, PnL attribution by leg, risk metrics, market commentary, outlook</td><td>Portfolio Manager</td><td><span class="blocker-badge green">No Blocker</span></td><td>Monthly PnL, attribution, risk history, commentary</td><td>Monthly investor report</td></tr>
+            <tr style="background:rgba(46,139,99,0.06);"><td></td><td colspan="5" style="color:var(--accent-green);font-weight:600;">↳ Output: Rebalance Package & Monthly Investor Report</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ REFERENCE TABLES ═══════ -->
+<div class="ref-section">
+  <h2>Reference Tables</h2>
+  <div class="ref-grid">
+    <div class="ref-card">
+      <div class="ref-label">Deliverables by Stage</div>
+      <div class="ref-row"><span class="k">Stage 1</span><span class="v">Eligible Trade Universe</span></div>
+      <div class="ref-row"><span class="k">Stage 2</span><span class="v">Calibrated Models & Backtest</span></div>
+      <div class="ref-row"><span class="k">Stage 3</span><span class="v">Stress Tests & Peer Review</span></div>
+      <div class="ref-row"><span class="k">Stage 4</span><span class="v">IC Memorandum</span></div>
+      <div class="ref-row"><span class="k">Stage 5</span><span class="v">Live Portfolio</span></div>
+      <div class="ref-row"><span class="k">Stage 6</span><span class="v">Risk Reports & Attribution</span></div>
+      <div class="ref-row"><span class="k">Stage 7</span><span class="v">Rebalance & Investor Report</span></div>
+    </div>
+    <div class="ref-card">
+      <div class="ref-label">Gate Decisions</div>
+      <div class="ref-row"><span class="k">3.1 Signal Quality</span><span class="v">Approve / Modify / Reject</span></div>
+      <div class="ref-row"><span class="k">5.2 IC Approval</span><span class="v">Approved / Conditional / Rejected</span></div>
+      <div class="ref-row"><span class="k">5.3 Compliance</span><span class="v">Clear / Fail (with limits)</span></div>
+      <div class="ref-row"><span class="k">6.4 Thesis Drift</span><span class="v">Maintain / Adjust / Unwind</span></div>
+      <div class="ref-row"><span class="k">7.3 Rebalance</span><span class="v">Approve / Modify</span></div>
+    </div>
+    <div class="ref-card">
+      <div class="ref-label">Feedback Loops</div>
+      <div class="ref-row"><span class="k">Tactical</span><span class="v">Rebalance → Monitoring (7.4 → 6.1)</span></div>
+      <div class="ref-row"><span class="k">Strategic</span><span class="v">Regime shift → Signal review (6.3 → 1.5)</span></div>
+      <div class="ref-row"><span class="k">Fundamental</span><span class="v">Thesis unwind → Universe rebuild (6.4 → 1.1)</span></div>
+    </div>
+  </div>
+
+  <!-- SCOPE TABLE -->
+  <div class="scope-section">
+    <div class="scope-table">
+      <div class="scope-header">Portfolio Scope Parameters</div>
+      <div class="scope-row"><span class="sk">Asset Class</span><span class="sv">Equity Volatility / Relative Value</span></div>
+      <div class="scope-row"><span class="sk">Instruments</span><span class="sv">Listed Options, Variance Swaps, Correlation Swaps, VIX Futures, Capped Vol Swaps</span></div>
+      <div class="scope-row"><span class="sk">Markets</span><span class="sv">S&P 500, Sector Indices, Top 50 Constituents</span></div>
+      <div class="scope-row"><span class="sk">Risk Framework</span><span class="sv">Greeks-based (Δ, Γ, V, Θ, Vanna, Volga), Correlation Risk, Scenario Analysis</span></div>
+      <div class="scope-row"><span class="sk">Hedging</span><span class="sv">Daily delta, Dynamic vol-targeting, Tail-risk overlays</span></div>
+      <div class="scope-row"><span class="sk">Benchmark</span><span class="sv">CBOE S&P 500 Dispersion Index, Absolute return target</span></div>
+      <div class="scope-row"><span class="sk">Time Horizon</span><span class="sv">4–8 weeks build, ongoing management</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ COLOR LEGEND ═══════ -->
+<div class="legend-section">
+  <h2>Color Legend</h2>
+  <div class="legend-grid">
+    <div class="legend-card">
+      <div class="legend-label">Node Types</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--node-process);"></div>Process Step (No Blocker)</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--node-decision);"></div>Decision / Branching Point</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--node-output);"></div>Output Document</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--node-gate);"></div>Hard Blocker Gate</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--node-soft);"></div>Soft Blocker (Needs Data Pre-Fetch)</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--node-terminal);"></div>Terminal (Start / End)</div>
+    </div>
+    <div class="legend-card">
+      <div class="legend-label">Edge Types</div>
+      <div class="legend-item"><div class="legend-line solid"></div>Sequential flow (solid line)</div>
+      <div class="legend-item"><div class="legend-line dashed"></div>Periodic feedback loop (dashed line)</div>
+    </div>
+    <div class="legend-card">
+      <div class="legend-label">Process Phases</div>
+      <div class="legend-item"><span class="dot teal" style="width:10px;height:10px;"></span>Idea Generation & Signals (Stage 1)</div>
+      <div class="legend-item"><span class="dot blue" style="width:10px;height:10px;"></span>Research & Calibration (Stage 2)</div>
+      <div class="legend-item"><span class="dot purple" style="width:10px;height:10px;"></span>Collaboration & Review (Stage 3)</div>
+      <div class="legend-item"><span class="dot green" style="width:10px;height:10px;"></span>Thesis & Design (Stage 4)</div>
+      <div class="legend-item"><span class="dot orange" style="width:10px;height:10px;"></span>Execution (Stage 5)</div>
+      <div class="legend-item"><span class="dot red" style="width:10px;height:10px;"></span>Monitoring (Stage 6)</div>
+      <div class="legend-item"><span class="dot gold" style="width:10px;height:10px;"></span>Rebalancing & Reporting (Stage 7)</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Systematic Volatility Portfolio Process · Process Framework V3 · Cross-Asset Trading Strat / Systematic Quant
+</div>
+
+<script>
+function switchTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Animate bars on load
+window.addEventListener('load', () => {
+  document.querySelectorAll('.bar-fill').forEach(bar => {
+    const w = bar.style.width;
+    bar.style.width = '0%';
+    setTimeout(() => { bar.style.width = w; }, 600);
+  });
+});
+</script>
+</body>
+</html>
