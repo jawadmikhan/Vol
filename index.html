@@ -603,37 +603,37 @@ flowchart TD
   START(["START"]):::entry --> A1
 
   subgraph S1["STAGE 1: IDEA GENERATION & SOURCING"]
-    A1["Quant: 1.1 Define Trade Universe\n(Index Members, Liquidity Screens)"]
-    A2["Quant: 1.2 Compute Correlations\n(Realized vs Implied)"]
-    A3["Quant: 1.3 Calculate Dispersion Z-Score\n(Index vs Constituent Vols)"]
-    A4["Quant: 1.4 Classify Volatility Regime\n(VIX, Term Structure)"]:::soft
-    A5["Quant: 1.5 Generate Entry Signals\n(Z-Score, Regime, Conviction)"]
-    A6["Quant: 1.6 Screen Idiosyncratic\nOpportunities"]:::soft
-    A7["Quant: 1.7 Screen Volatility Harvesting\nOpportunities"]:::soft
+    A1["Quant: 1.1<br/>Define dispersion trade universe"]
+    A2["Quant: 1.2<br/>Compute realized vs implied correlation"]
+    A3["Quant: 1.3<br/>Calculate dispersion Z-score"]
+    A4["Quant: 1.4<br/>Classify current volatility regime"]:::soft
+    A5["Quant: 1.5<br/>Generate dispersion entry signals"]
+    A6["Quant: 1.6<br/>Screen idiosyncratic volatility opportunities"]:::soft
+    A7["Quant: 1.7<br/>Screen volatility harvesting opportunities"]:::soft
     A1 --> A2 --> A3 --> A4 --> A5 --> A6 --> A7
   end
   A7 --> O1[/"Eligible Trade Universe"/]:::output
 
   O1 --> B1
   subgraph S2["STAGE 2: RESEARCH AGGREGATION"]
-    B1["Quant: 2.1 Calibrate Stochastic\nVolatility Model"]
-    B2["Quant: 2.2 Estimate Correlation Matrix\n(DCC-GARCH)"]
-    B3["Quant: 2.3 Build Greeks Engine\n(Delta, Gamma, Vega, Theta)"]
-    B4["Quant: 2.4 Backtest Dispersion Strategy\n(Sharpe, Drawdown, Turnover)"]
-    B5["Analyst: 2.5 Aggregate Sell-Side Research"]:::soft
-    B6["Quant: 2.6 Backtest Harvesting &\nDirectional Strategies"]
+    B1["Quant: 2.1<br/>Calibrate stochastic volatility model"]
+    B2["Quant: 2.2<br/>Estimate cross-asset correlation matrix"]
+    B3["Quant: 2.3<br/>Build comprehensive Greeks engine"]
+    B4["Quant: 2.4<br/>Backtest dispersion strategy"]
+    B5["Analyst: 2.5<br/>Aggregate sell-side research"]:::soft
+    B6["Quant: 2.6<br/>Backtest volatility harvesting & directional strategies"]
     B1 --> B2 --> B3 --> B4 --> B5 --> B6
   end
   B6 --> O2[/"Calibrated Models & Backtest"/]:::output
 
   O2 --> C1
   subgraph S3["STAGE 3: COLLABORATION & PEER REVIEW"]
-    C1["Portfolio Manager: 3.1 Review Signal Quality"]
-    G1{"Portfolio Manager: 3.1 Signal\nQuality Gate"}:::gate
-    C2["Risk Manager: 3.2 Stress-Test\nCorrelation Matrix"]
-    C3["Portfolio Manager: 3.3 Evaluate Volatility\nHarvesting Overlay"]
-    C4["Portfolio Manager & Risk Manager: 3.4 Formulate Directional\nVolatility Views"]
-    C5["Portfolio Manager: 3.5 Assess Counterparty &\nISDA Documentation"]:::soft
+    C1["Portfolio Manager: 3.1<br/>Review dispersion signal quality"]
+    G1{"Portfolio Manager: 3.1<br/>Signal Quality Gate"}:::gate
+    C2["Risk Manager: 3.2<br/>Stress-test correlation matrix"]
+    C3["Portfolio Manager: 3.3<br/>Evaluate volatility harvesting overlay"]
+    C4["Portfolio Manager & Risk Manager: 3.4<br/>Formulate directional volatility views"]
+    C5["Portfolio Manager: 3.5<br/>Assess counterparty risk & ISDA documentation"]:::soft
     C1 --> G1
     G1 -- Approve --> C2 --> C3 --> C4 --> C5
   end
@@ -642,81 +642,82 @@ flowchart TD
 
   O3 --> D1
   subgraph S4["STAGE 4: THESIS DEVELOPMENT"]
-    D1["Portfolio Manager: 4.1 Draft Investment\nThesis Memo"]
-    D2["Quant: 4.2 Design Index Short\nVolatility Leg"]
-    D3["Quant: 4.3 Design Constituent Long\nVolatility Leg"]
-    D4["Quant: 4.4 Design Volatility\nHarvesting Positions"]
-    D5["Quant: 4.5 Design Directional\nVolatility Positions"]
-    D6["Quant: 4.6 Verify Portfolio\nGreeks & Constraints"]
-    D7["Quant: 4.7 Specify Volatility-\nTargeting Framework"]
-    D8["Quant: 4.8 Design Tail-Risk\n& Collar Overlay"]
-    D9["Risk Manager: 4.9 Run Full\nScenario Analysis"]
-    D10["Quant: 4.10 Design Attribution\nMethodology"]
-    D11["Portfolio Manager: 4.11 Finalize Investment\nCommittee Memorandum"]
+    D1["Portfolio Manager: 4.1<br/>Draft investment thesis memo"]
+    D2["Quant: 4.2<br/>Design index short volatility leg"]
+    D3["Quant: 4.3<br/>Design constituent long volatility leg"]
+    D4["Quant: 4.4<br/>Design volatility harvesting positions"]
+    D5["Quant: 4.5<br/>Design directional volatility positions"]
+    D6["Quant: 4.6<br/>Verify portfolio Greeks & constraints"]
+    D7["Quant: 4.7<br/>Specify volatility-targeting framework"]
+    D8["Quant: 4.8<br/>Design tail-risk hedging & collar overlay"]
+    D9["Risk Manager: 4.9<br/>Run full scenario analysis"]
+    D10["Quant: 4.10<br/>Design attribution methodology"]
+    D11["Portfolio Manager: 4.11<br/>Finalize Investment Committee memorandum"]
     D1 --> D2 --> D3 --> D4 --> D5 --> D6 --> D7 --> D8 --> D9 --> D10 --> D11
   end
   D11 --> O4[/"Investment Committee Memorandum"/]:::output
 
   O4 --> E1
   subgraph S5["STAGE 5: DECISION, APPROVAL, & PORTFOLIO CONSTRUCTION"]
-    E1["Portfolio Manager: 5.1 Present to Investment\nCommittee"]
-    E2{"Investment Committee: 5.2\nApproval Vote?"}:::gate
-    E3["Compliance: 5.3 Compliance Clearance"]:::soft
-    E4["Quant: 5.4 Generate Execution\nSchedule"]
-    E5["Trader: 5.5 Execute Index\nOption Legs"]:::hard
-    E6["Trader: 5.6 Execute Constituent\n& Over-the-Counter Legs"]:::hard
-    E7["Operations: 5.7 Reconcile Trades\n& Confirm Margin"]:::soft
-    E1 --> E2
-    E2 -- Approved --> E3 --> E4 --> E5 --> E6 --> E7
+    E1["Portfolio Manager: 5.1<br/>Present portfolio proposal to Investment Committee"]
+    G2{"Investment Committee: 5.2<br/>Approval Vote?"}:::gate_hard
+    E3["Compliance: 5.3<br/>Clear compliance requirements"]:::soft
+    E4["Quant: 5.4<br/>Generate execution schedule"]
+    E5["Trader: 5.5<br/>Execute index option legs"]:::hard
+    E6["Trader: 5.6<br/>Execute constituent & Over-the-Counter legs"]:::hard
+    E7["Operations: 5.7<br/>Reconcile trades & confirm margin"]:::soft
+    E1 --> G2
+    G2 -- Approved --> E3 --> E4 --> E5 --> E6 --> E7
   end
-  E2 -- Rejected --> KILL(["Kill / Rework"]):::terminal
-  E2 -. "Conditional" .-> D1
+  G2 -- Rejected --> KILL(["Kill / Rework"]):::entry
+  G2 -. "Conditional" .-> D1
   E7 --> O5[/"Live Portfolio"/]:::output
 
   O5 --> F1
   subgraph S6["STAGE 6: MONITORING & REVIEW"]
-    F1["Risk Manager: 6.1 Monitor Portfolio\nGreeks Daily"]:::soft
-    F2["Quant: 6.2 Track Multi-Strategy\nAttribution"]:::soft
-    F3["Quant: 6.3 Update Regime\nClassification"]:::soft
-    F4{"Portfolio Manager: 6.4 Thesis\nDrift?"}:::gate
-    F5["Risk Manager: 6.5 Weekly Tail-Risk\nDiagnostic"]
-    F6["Portfolio Manager: 6.6 Manage Earnings\nEvents"]
-    F1 --> F2 --> F3 --> F4
-    F4 -- Maintain --> F5 --> F6
+    F1["Risk Manager: 6.1<br/>Monitor portfolio Greeks daily"]:::soft
+    F2["Quant: 6.2<br/>Track multi-strategy Profit & Loss attribution"]:::soft
+    F3["Quant: 6.3<br/>Update regime classification"]:::soft
+    G3{"Portfolio Manager: 6.4<br/>Thesis Drift?"}:::gate
+    F5["Risk Manager: 6.5<br/>Run weekly tail-risk diagnostic"]
+    F6["Portfolio Manager: 6.6<br/>Manage constituent earnings events"]
+    F1 --> F2 --> F3 --> G3
+    G3 -- Maintain --> F5 --> F6
   end
-  F4 -. "Adjust" .-> D1
-  F4 -. "Unwind" .-> A1
-  F3 -. "Strategic: Regime Shift" .-> A5
+  G3 -. "Adjust" .-> D1
+  G3 -. "Unwind" .-> A1
   F6 --> O6[/"Daily Risk Reports & Attribution"/]:::output
 
-  O6 --> G71
+  O6 --> G1N
   subgraph S7["STAGE 7: REBALANCING & LIQUIDITY"]
-    G71["Quant: 7.1 Compute Rebalancing\nTrades"]
-    G72["Quant: 7.2 Adjust Volatility-\nTarget Leverage"]
-    G73["Portfolio Manager: 7.3 Approve Rebalancing\nPackage"]
-    G74["Trader: 7.4 Execute Rebalancing\nTrades"]:::hard
-    G75["Quant: 7.5 Post-Rebalance\nVerification"]
-    G76["Portfolio Manager: 7.6 Prepare Monthly\nInvestor Report"]
-    G71 --> G72 --> G73 --> G74 --> G75 --> G76
+    G1N["Quant: 7.1<br/>Compute optimal rebalancing trades"]
+    G2N["Quant: 7.2<br/>Adjust volatility-target leverage"]
+    G3N["Portfolio Manager: 7.3<br/>Approve rebalancing package"]
+    G4{"Action<br/>Decision"}:::gate
+    G4N["Trader: 7.4<br/>Execute rebalancing trades"]:::hard
+    G5N["Quant: 7.5<br/>Verify post-rebalance portfolio"]
+    G6N["Portfolio Manager: 7.6<br/>Prepare monthly investor report"]
+    G1N --> G2N --> G3N --> G4
+    G4 -- Execute --> G4N --> G5N --> G6N
   end
-  G74 -. "Tactical: Rebalance → Monitoring" .-> F1
-  G76 --> O7[/"Rebalance Package & Investor Report"/]:::output
+  G4 -. "Hold" .-> F1
+  G6N --> O7[/"Rebalance Package & Investor Report"/]:::output
 
-  O7 --> DEC{"Action\nDecision"}:::gate
-  DEC -- Hold --> F1
-  DEC -- Rebalance --> G71
-  DEC -. "Fundamental: Full Rebuild" .-> A1
-  DEC --> PERF[/"Performance Report"/]:::output
-  PERF --> ENDNODE(["END / NEXT CYCLE"]):::entry
+  G5N -. "Strategic: Regime Shift" .-> A5
+  G4N -. "Tactical: Back to Monitoring" .-> F1
+  O7 -. "Fundamental: Full Rebuild" .-> A1
 
-  classDef default fill:#1a2e4a,stroke:#4a7aaa,stroke-width:2px,color:#e2e8f0
-  classDef soft fill:#2a2a15,stroke:#b8942e,stroke-width:2px,color:#e2e8f0
-  classDef hard fill:#4a1520,stroke:#d94a5e,stroke-width:2px,color:#e2e8f0
-  classDef gate fill:#3a3010,stroke:#d4a843,stroke-width:2.5px,color:#e2e8f0
-  classDef output fill:#152a20,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-  classDef terminal fill:#1a3a2a,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-  classDef entry fill:#1a3a2a,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-        </pre>
+  O7 --> ENDNODE(["END / NEXT CYCLE"]):::entry
+
+  classDef default fill:#1a2e4a,stroke:#4a7aaa,stroke-width:1.5px,color:#e2e8f0
+  classDef soft fill:#3d3a1a,stroke:#d8a843,stroke-width:2px,color:#f0e6b8
+  classDef hard fill:#3d1a1a,stroke:#e06060,stroke-width:2px,color:#f0b8b8
+  classDef gate fill:#1a3d2a,stroke:#48b884,stroke-width:2px,color:#b8f0d0
+  classDef gate_hard fill:#3d1a1a,stroke:#e06060,stroke-width:2px,color:#f0b8b8
+  classDef entry fill:#0d1117,stroke:#3ecfb4,stroke-width:2px,color:#3ecfb4
+  classDef output fill:#1a2e3a,stroke:#3ecfb4,stroke-width:1.5px,color:#3ecfb4
+
+</pre>
     </div>
   </div>
 
@@ -749,37 +750,39 @@ flowchart TD
   START(["START"]):::entry --> A1
 
   subgraph S1["STAGE 1: IDEA GENERATION & SOURCING"]
-    A1["Quant: 1.1 Define Trade Universe\n(Index Members, Option Liquidity)"]
-    A2["Quant: 1.2 Compute Correlations\n(Realized vs Implied, Cross-Sector)"]
-    A3["Quant: 1.3 Calculate Dispersion Z-Score\n(Index vs Constituent Vol Spread)"]
-    A4["Quant: 1.4 Classify Volatility Regime\n(VIX Spot, Futures Curve, VVIX)"]:::soft
-    A5["Quant: 1.5 Generate Entry Signals\n(Z-Score Thresholds, Conviction Scores)"]
-    A6["Quant: 1.6 Screen Idiosyncratic Opportunities\n(Earnings, Events, Single-Stock Alpha)"]:::soft
-    A7["Quant: 1.7 Screen Volatility Harvesting\nOpportunities\n(Implied vs Realized Spread)"]:::soft
+    A1["Quant: 1.1<br/>Define dispersion trade universe"]
+    A2["Quant: 1.2<br/>Compute realized vs implied correlation"]
+    A3["Quant: 1.3<br/>Calculate dispersion Z-score"]
+    A4["Quant: 1.4<br/>Classify current volatility regime"]:::soft
+    A5["Quant: 1.5<br/>Generate dispersion entry signals"]
+    A6["Quant: 1.6<br/>Screen idiosyncratic volatility opportunities"]:::soft
+    A7["Quant: 1.7<br/>Screen volatility harvesting opportunities"]:::soft
     A1 --> A2 --> A3 --> A4 --> A5 --> A6 --> A7
   end
   A7 --> O1[/"Eligible Trade Universe"/]:::output
 
   O1 --> B1
   subgraph S2["STAGE 2: RESEARCH AGGREGATION"]
-    B1["Quant: 2.1 Calibrate Stochastic\nVolatility Model\n(Heston, SABR Parameters)"]
-    B2["Quant: 2.2 Estimate Correlation Matrix\n(DCC-GARCH, Regime-Conditional)"]
-    B3["Quant: 2.3 Build Greeks Engine\n(Delta, Gamma, Vega, Theta,\nVanna, Volga)"]
-    B4["Quant: 2.4 Backtest Dispersion Strategy\n(Sharpe, Max Drawdown, Turnover)"]
-    B5["Analyst: 2.5 Aggregate Sell-Side Research\n(Event Calendar, Vol Themes)"]:::soft
-    B6["Quant: 2.6 Backtest Harvesting &\nDirectional Strategies\n(Standalone Returns, Regime Splits)"]
+    B1["Quant: 2.1<br/>Calibrate stochastic volatility model"]
+    B2["Quant: 2.2<br/>Estimate cross-asset correlation matrix"]
+    B3["Quant: 2.3<br/>Build comprehensive Greeks engine"]
+    B4["Quant: 2.4<br/>Backtest dispersion strategy"]
+    B5["Analyst: 2.5<br/>Aggregate sell-side research"]:::soft
+    B6["Quant: 2.6<br/>Backtest volatility harvesting & directional strategies"]
     B1 --> B2 --> B3 --> B4 --> B5 --> B6
   end
-  B6 --> O2[/"Calibrated Models & Backtest Results"/]:::output
+  B6 --> O2[/"Calibrated Models & Backtest"/]:::output
+  O2 --> NEXT(["→ Stage 3"]):::entry
 
-  classDef default fill:#1a2e4a,stroke:#4a7aaa,stroke-width:2px,color:#e2e8f0
-  classDef soft fill:#2a2a15,stroke:#b8942e,stroke-width:2px,color:#e2e8f0
-  classDef hard fill:#4a1520,stroke:#d94a5e,stroke-width:2px,color:#e2e8f0
-  classDef gate fill:#3a3010,stroke:#d4a843,stroke-width:2.5px,color:#e2e8f0
-  classDef output fill:#152a20,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-  classDef terminal fill:#1a3a2a,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-  classDef entry fill:#1a3a2a,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-      </pre>
+  classDef default fill:#1a2e4a,stroke:#4a7aaa,stroke-width:1.5px,color:#e2e8f0
+  classDef soft fill:#3d3a1a,stroke:#d8a843,stroke-width:2px,color:#f0e6b8
+  classDef hard fill:#3d1a1a,stroke:#e06060,stroke-width:2px,color:#f0b8b8
+  classDef gate fill:#1a3d2a,stroke:#48b884,stroke-width:2px,color:#b8f0d0
+  classDef gate_hard fill:#3d1a1a,stroke:#e06060,stroke-width:2px,color:#f0b8b8
+  classDef entry fill:#0d1117,stroke:#3ecfb4,stroke-width:2px,color:#3ecfb4
+  classDef output fill:#1a2e3a,stroke:#3ecfb4,stroke-width:1.5px,color:#3ecfb4
+
+</pre>
     </div>
     <div class="flow-container">
       <div style="overflow-x:auto;">
@@ -835,29 +838,31 @@ flowchart TD
   'nodeTextColor': '#e2e8f0'
 }}}%%
 flowchart TD
-  IN(["From Stage 2"]):::entry --> C1
+  PREV(["Stage 2 →"]):::entry --> C1
 
   subgraph S3["STAGE 3: COLLABORATION & PEER REVIEW"]
-    C1["Portfolio Manager: 3.1 Review Signal Quality\n(Challenge Assumptions, Validate Pipeline)"]
-    G1{"Portfolio Manager: 3.1 Signal\nQuality Gate"}:::gate
-    C2["Risk Manager: 3.2 Stress-Test Correlation Matrix\n(Crisis Scenarios, Correlation Spikes)"]
-    C3["Portfolio Manager: 3.3 Evaluate Volatility\nHarvesting Overlay\n(Tenor, Delta, Stop-Loss Rules)"]
-    C4["Portfolio Manager & Risk Manager: 3.4 Formulate Directional\nVolatility Views\n(Macro Thesis, Kill Criteria)"]
-    C5["Portfolio Manager: 3.5 Assess Counterparty &\nISDA Documentation\n(Ratings, Diversification, Docs)"]:::soft
+    C1["Portfolio Manager: 3.1<br/>Review dispersion signal quality"]
+    G1{"Portfolio Manager: 3.1<br/>Signal Quality Gate"}:::gate
+    C2["Risk Manager: 3.2<br/>Stress-test correlation matrix"]
+    C3["Portfolio Manager: 3.3<br/>Evaluate volatility harvesting overlay"]
+    C4["Portfolio Manager & Risk Manager: 3.4<br/>Formulate directional volatility views"]
+    C5["Portfolio Manager: 3.5<br/>Assess counterparty risk & ISDA documentation"]:::soft
     C1 --> G1
     G1 -- Approve --> C2 --> C3 --> C4 --> C5
   end
-  G1 -. "Reject → Rework" .-> REJ(["Back to Stage 1"]):::terminal
+  G1 -. "Reject → Stage 1" .-> BACK1(["← Stage 1"]):::entry
   C5 --> O3[/"Stress Tests & Peer Review"/]:::output
+  O3 --> NEXT(["→ Stage 4"]):::entry
 
-  classDef default fill:#1a2e4a,stroke:#4a7aaa,stroke-width:2px,color:#e2e8f0
-  classDef soft fill:#2a2a15,stroke:#b8942e,stroke-width:2px,color:#e2e8f0
-  classDef hard fill:#4a1520,stroke:#d94a5e,stroke-width:2px,color:#e2e8f0
-  classDef gate fill:#3a3010,stroke:#d4a843,stroke-width:2.5px,color:#e2e8f0
-  classDef output fill:#152a20,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-  classDef terminal fill:#1a3a2a,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-  classDef entry fill:#1a3a2a,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-      </pre>
+  classDef default fill:#1a2e4a,stroke:#4a7aaa,stroke-width:1.5px,color:#e2e8f0
+  classDef soft fill:#3d3a1a,stroke:#d8a843,stroke-width:2px,color:#f0e6b8
+  classDef hard fill:#3d1a1a,stroke:#e06060,stroke-width:2px,color:#f0b8b8
+  classDef gate fill:#1a3d2a,stroke:#48b884,stroke-width:2px,color:#b8f0d0
+  classDef gate_hard fill:#3d1a1a,stroke:#e06060,stroke-width:2px,color:#f0b8b8
+  classDef entry fill:#0d1117,stroke:#3ecfb4,stroke-width:2px,color:#3ecfb4
+  classDef output fill:#1a2e3a,stroke:#3ecfb4,stroke-width:1.5px,color:#3ecfb4
+
+</pre>
     </div>
     <div class="flow-container">
       <div style="overflow-x:auto;">
@@ -902,45 +907,34 @@ flowchart TD
   'nodeTextColor': '#e2e8f0'
 }}}%%
 flowchart TD
-  IN(["From Stage 3"]):::entry --> D1
+  PREV(["Stage 3 →"]):::entry --> D1
 
   subgraph S4["STAGE 4: THESIS DEVELOPMENT"]
-    D1["Portfolio Manager: 4.1 Draft Investment Thesis Memo\n(Rationale, Assumptions, Kill Criteria)"]
-
-    subgraph DISP["  DISPERSION CORE  "]
-      D2["Quant: 4.2 Design Index Short\nVolatility Leg\n(Strikes, Tenors, Notionals)"]
-      D3["Quant: 4.3 Design Constituent Long\nVolatility Leg\n(Vega-Weighted, Concentration Limits)"]
-    end
-
-    subgraph AUG["  AUGMENTATION STRATEGIES  "]
-      D4["Quant: 4.4 Design Volatility Harvesting\nPositions\n(Straddles, Strangles, Iron Condors)"]
-      D5["Quant: 4.5 Design Directional Volatility\nPositions\n(VIX Spreads, Skew Trades)"]
-    end
-
-    subgraph RISK["  RISK & FRAMEWORK  "]
-      D6["Quant: 4.6 Verify Portfolio Greeks\n& Constraints\n(Cross-Leg Netting, Budget Check)"]
-      D7["Quant: 4.7 Specify Volatility-Targeting\nFramework\n(Dynamic Leverage Rules)"]
-      D8["Quant: 4.8 Design Tail-Risk &\nCollar Overlay\n(Puts, Collars, Put Spreads)"]
-    end
-
-    subgraph FINAL["  FINALIZATION  "]
-      D9["Risk Manager: 4.9 Run Full Scenario Analysis\n(Multi-Factor, Per-Leg Stress)"]
-      D10["Quant: 4.10 Design Attribution\nMethodology\n(5-Leg Decomposition)"]
-      D11["Portfolio Manager: 4.11 Finalize Investment\nCommittee Memorandum"]
-    end
-
+    D1["Portfolio Manager: 4.1<br/>Draft investment thesis memo"]
+    D2["Quant: 4.2<br/>Design index short volatility leg"]
+    D3["Quant: 4.3<br/>Design constituent long volatility leg"]
+    D4["Quant: 4.4<br/>Design volatility harvesting positions"]
+    D5["Quant: 4.5<br/>Design directional volatility positions"]
+    D6["Quant: 4.6<br/>Verify portfolio Greeks & constraints"]
+    D7["Quant: 4.7<br/>Specify volatility-targeting framework"]
+    D8["Quant: 4.8<br/>Design tail-risk hedging & collar overlay"]
+    D9["Risk Manager: 4.9<br/>Run full scenario analysis"]
+    D10["Quant: 4.10<br/>Design attribution methodology"]
+    D11["Portfolio Manager: 4.11<br/>Finalize Investment Committee memorandum"]
     D1 --> D2 --> D3 --> D4 --> D5 --> D6 --> D7 --> D8 --> D9 --> D10 --> D11
   end
   D11 --> O4[/"Investment Committee Memorandum"/]:::output
+  O4 --> NEXT(["→ Stage 5"]):::entry
 
-  classDef default fill:#1a2e4a,stroke:#4a7aaa,stroke-width:2px,color:#e2e8f0
-  classDef soft fill:#2a2a15,stroke:#b8942e,stroke-width:2px,color:#e2e8f0
-  classDef hard fill:#4a1520,stroke:#d94a5e,stroke-width:2px,color:#e2e8f0
-  classDef gate fill:#3a3010,stroke:#d4a843,stroke-width:2.5px,color:#e2e8f0
-  classDef output fill:#152a20,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-  classDef terminal fill:#1a3a2a,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-  classDef entry fill:#1a3a2a,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-      </pre>
+  classDef default fill:#1a2e4a,stroke:#4a7aaa,stroke-width:1.5px,color:#e2e8f0
+  classDef soft fill:#3d3a1a,stroke:#d8a843,stroke-width:2px,color:#f0e6b8
+  classDef hard fill:#3d1a1a,stroke:#e06060,stroke-width:2px,color:#f0b8b8
+  classDef gate fill:#1a3d2a,stroke:#48b884,stroke-width:2px,color:#b8f0d0
+  classDef gate_hard fill:#3d1a1a,stroke:#e06060,stroke-width:2px,color:#f0b8b8
+  classDef entry fill:#0d1117,stroke:#3ecfb4,stroke-width:2px,color:#3ecfb4
+  classDef output fill:#1a2e3a,stroke:#3ecfb4,stroke-width:1.5px,color:#3ecfb4
+
+</pre>
     </div>
     <div class="flow-container">
       <div style="overflow-x:auto;">
@@ -991,47 +985,48 @@ flowchart TD
   'nodeTextColor': '#e2e8f0'
 }}}%%
 flowchart TD
-  IN(["From Stage 4"]):::entry --> E1
+  PREV(["Stage 4 →"]):::entry --> E1
 
   subgraph S5["STAGE 5: DECISION, APPROVAL, & PORTFOLIO CONSTRUCTION"]
-    E1["Portfolio Manager: 5.1 Present to Investment\nCommittee\n(Memo, Scenario Analysis)"]
-    E2{"Investment Committee: 5.2\nApproval Vote?"}:::gate
-    E3["Compliance: 5.3 Compliance Clearance\n(Position Limits, Mandate)"]:::soft
-    E4["Quant: 5.4 Generate Execution\nSchedule\n(Sequencing, Timing)"]
-    E5["Trader: 5.5 Execute Index\nOption Legs"]:::hard
-    E6["Trader: 5.6 Execute Constituent\n& Over-the-Counter Legs"]:::hard
-    E7["Operations: 5.7 Reconcile Trades &\nConfirm Margin\n(Prime Broker, Portfolio Mgmt System)"]:::soft
-    E1 --> E2
-    E2 -- Approved --> E3 --> E4 --> E5 --> E6 --> E7
+    E1["Portfolio Manager: 5.1<br/>Present portfolio proposal to Investment Committee"]
+    G2{"Investment Committee: 5.2<br/>Approval Vote?"}:::gate_hard
+    E3["Compliance: 5.3<br/>Clear compliance requirements"]:::soft
+    E4["Quant: 5.4<br/>Generate execution schedule"]
+    E5["Trader: 5.5<br/>Execute index option legs"]:::hard
+    E6["Trader: 5.6<br/>Execute constituent & Over-the-Counter legs"]:::hard
+    E7["Operations: 5.7<br/>Reconcile trades & confirm margin"]:::soft
+    E1 --> G2
+    G2 -- Approved --> E3 --> E4 --> E5 --> E6 --> E7
   end
-  E2 -- Rejected --> KILL(["Kill / Rework"]):::terminal
-  E2 -. "Conditional" .-> RW(["Back to 4.1"]):::terminal
+  G2 -- Rejected --> KILL(["Kill / Rework"]):::entry
+  G2 -. "Conditional → Stage 4" .-> BACK4(["← Stage 4"]):::entry
   E7 --> O5[/"Live Portfolio"/]:::output
 
   O5 --> F1
   subgraph S6["STAGE 6: MONITORING & REVIEW"]
-    F1["Risk Manager: 6.1 Monitor Portfolio\nGreeks Daily\n(Delta, Gamma, Vega, Theta)"]:::soft
-    F2["Quant: 6.2 Track Multi-Strategy\nAttribution\n(Dispersion, Harvest, Directional)"]:::soft
-    F3["Quant: 6.3 Update Regime\nClassification\n(Transition Probabilities)"]:::soft
-    F4{"Portfolio Manager: 6.4 Thesis\nDrift?"}:::gate
-    F5["Risk Manager: 6.5 Weekly Tail-Risk\nDiagnostic\n(Hedge Coverage, Roll Schedule)"]
-    F6["Portfolio Manager: 6.6 Manage Earnings\nEvents\n(Event Hedging, Position Sizing)"]
-    F1 --> F2 --> F3 --> F4
-    F4 -- Maintain --> F5 --> F6
+    F1["Risk Manager: 6.1<br/>Monitor portfolio Greeks daily"]:::soft
+    F2["Quant: 6.2<br/>Track multi-strategy Profit & Loss attribution"]:::soft
+    F3["Quant: 6.3<br/>Update regime classification"]:::soft
+    G3{"Portfolio Manager: 6.4<br/>Thesis Drift?"}:::gate
+    F5["Risk Manager: 6.5<br/>Run weekly tail-risk diagnostic"]
+    F6["Portfolio Manager: 6.6<br/>Manage constituent earnings events"]
+    F1 --> F2 --> F3 --> G3
+    G3 -- Maintain --> F5 --> F6
   end
-  F4 -. "Adjust" .-> ADJ(["Back to 4.1"]):::terminal
-  F4 -. "Unwind" .-> UNW(["Back to 1.1"]):::terminal
-  F3 -. "Strategic: Regime Shift" .-> SIG(["Back to 1.5"]):::terminal
+  G3 -. "Adjust → Stage 4" .-> BACK4B(["← Stage 4"]):::entry
+  G3 -. "Unwind → Stage 1" .-> BACK1(["← Stage 1"]):::entry
   F6 --> O6[/"Daily Risk Reports & Attribution"/]:::output
+  O6 --> NEXT(["→ Stage 7"]):::entry
 
-  classDef default fill:#1a2e4a,stroke:#4a7aaa,stroke-width:2px,color:#e2e8f0
-  classDef soft fill:#2a2a15,stroke:#b8942e,stroke-width:2px,color:#e2e8f0
-  classDef hard fill:#4a1520,stroke:#d94a5e,stroke-width:2px,color:#e2e8f0
-  classDef gate fill:#3a3010,stroke:#d4a843,stroke-width:2.5px,color:#e2e8f0
-  classDef output fill:#152a20,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-  classDef terminal fill:#1a3a2a,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-  classDef entry fill:#1a3a2a,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-      </pre>
+  classDef default fill:#1a2e4a,stroke:#4a7aaa,stroke-width:1.5px,color:#e2e8f0
+  classDef soft fill:#3d3a1a,stroke:#d8a843,stroke-width:2px,color:#f0e6b8
+  classDef hard fill:#3d1a1a,stroke:#e06060,stroke-width:2px,color:#f0b8b8
+  classDef gate fill:#1a3d2a,stroke:#48b884,stroke-width:2px,color:#b8f0d0
+  classDef gate_hard fill:#3d1a1a,stroke:#e06060,stroke-width:2px,color:#f0b8b8
+  classDef entry fill:#0d1117,stroke:#3ecfb4,stroke-width:2px,color:#3ecfb4
+  classDef output fill:#1a2e3a,stroke:#3ecfb4,stroke-width:1.5px,color:#3ecfb4
+
+</pre>
     </div>
     <div class="flow-container">
       <div style="overflow-x:auto;">
@@ -1085,35 +1080,35 @@ flowchart TD
   'nodeTextColor': '#e2e8f0'
 }}}%%
 flowchart TD
-  IN(["From Stage 6"]):::entry --> G1N
+  PREV(["Stage 6 →"]):::entry --> G1N
 
   subgraph S7["STAGE 7: REBALANCING & LIQUIDITY"]
-    G1N["Quant: 7.1 Compute Rebalancing Trades\n(All 5 Legs, Cost-Optimal Rolls)"]
-    G2N["Quant: 7.2 Adjust Volatility-Target\nLeverage\n(Trailing Realized Vol, Dynamic Scaling)"]
-    G3N["Portfolio Manager: 7.3 Approve Rebalancing\nPackage\n(Mandate Consistency Check)"]
-    G4N["Trader: 7.4 Execute Rebalancing\nTrades"]:::hard
-    G5N["Quant: 7.5 Post-Rebalance\nVerification\n(Position Reconciliation)"]
-    G6N["Portfolio Manager: 7.6 Prepare Monthly\nInvestor Report\n(Per-Leg Attribution, Outlook)"]
-    G1N --> G2N --> G3N --> G4N --> G5N --> G6N
+    G1N["Quant: 7.1<br/>Compute optimal rebalancing trades"]
+    G2N["Quant: 7.2<br/>Adjust volatility-target leverage"]
+    G3N["Portfolio Manager: 7.3<br/>Approve rebalancing package"]
+    G4{"Action<br/>Decision"}:::gate
+    G4N["Trader: 7.4<br/>Execute rebalancing trades"]:::hard
+    G5N["Quant: 7.5<br/>Verify post-rebalance portfolio"]
+    G6N["Portfolio Manager: 7.6<br/>Prepare monthly investor report"]
+    G1N --> G2N --> G3N --> G4
+    G4 -- Execute --> G4N --> G5N --> G6N
   end
-  G4N -. "Tactical: Back to Monitoring" .-> MON(["Back to 6.1"]):::terminal
+  G4 -. "Hold → Stage 6" .-> BACK6(["← Stage 6"]):::entry
+  G5N -. "Strategic: Regime Shift → Stage 1" .-> BACK1(["← Stage 1"]):::entry
+  G4N -. "Tactical: Back to Monitoring" .-> BACK6B(["← Stage 6"]):::entry
   G6N --> O7[/"Rebalance Package & Investor Report"/]:::output
+  O7 -. "Fundamental: Full Rebuild" .-> BACK1B(["← Stage 1"]):::entry
+  O7 --> ENDNODE(["END / NEXT CYCLE"]):::entry
 
-  O7 --> DEC{"Action\nDecision"}:::gate
-  DEC -- Hold --> MON2(["Back to 6.1"]):::terminal
-  DEC -- Rebalance --> G1N
-  DEC -. "Fundamental: Full Rebuild" .-> REB(["Back to 1.1"]):::terminal
-  DEC --> PERF[/"Performance Report"/]:::output
-  PERF --> ENDNODE(["END / NEXT CYCLE"]):::entry
+  classDef default fill:#1a2e4a,stroke:#4a7aaa,stroke-width:1.5px,color:#e2e8f0
+  classDef soft fill:#3d3a1a,stroke:#d8a843,stroke-width:2px,color:#f0e6b8
+  classDef hard fill:#3d1a1a,stroke:#e06060,stroke-width:2px,color:#f0b8b8
+  classDef gate fill:#1a3d2a,stroke:#48b884,stroke-width:2px,color:#b8f0d0
+  classDef gate_hard fill:#3d1a1a,stroke:#e06060,stroke-width:2px,color:#f0b8b8
+  classDef entry fill:#0d1117,stroke:#3ecfb4,stroke-width:2px,color:#3ecfb4
+  classDef output fill:#1a2e3a,stroke:#3ecfb4,stroke-width:1.5px,color:#3ecfb4
 
-  classDef default fill:#1a2e4a,stroke:#4a7aaa,stroke-width:2px,color:#e2e8f0
-  classDef soft fill:#2a2a15,stroke:#b8942e,stroke-width:2px,color:#e2e8f0
-  classDef hard fill:#4a1520,stroke:#d94a5e,stroke-width:2px,color:#e2e8f0
-  classDef gate fill:#3a3010,stroke:#d4a843,stroke-width:2.5px,color:#e2e8f0
-  classDef output fill:#152a20,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-  classDef terminal fill:#1a3a2a,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-  classDef entry fill:#1a3a2a,stroke:#3ecfb4,stroke-width:2px,color:#e2e8f0
-      </pre>
+</pre>
     </div>
     <div class="flow-container">
       <div style="overflow-x:auto;">
@@ -1238,7 +1233,7 @@ mermaid.initialize({
   startOnLoad: false,
   theme: 'base',
   securityLevel: 'loose',
-  flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis', padding: 15 }
+  flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis', padding: 18, wrappingWidth: 200 }
 });
 
 // Render all charts: show all tabs → render → hide non-active
