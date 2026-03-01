@@ -106,7 +106,6 @@
 <body>
 <h1>Systematic Volatility Portfolio Process</h1>
 <p class="subtitle">48-step, 7-stage workflow &middot; 5 strategy legs &middot; Dispersion, Volatility Harvesting, Directional Long/Short, Dynamic Volatility Targeting, Option Overlays</p>
-<p style="margin-bottom:16px;"><a href="index.html" style="color:#2e7d32;font-size:13px;text-decoration:none;">&larr; Back to Dashboard</a></p>
 
 <div class="legend">
   <div class="legend-group">
@@ -131,37 +130,37 @@ flowchart TD
   START(["START"]):::start
 
   subgraph S1["STAGE 1: IDEA GENERATION & SOURCING"]
-    s1_1["Quant: 1.1\nDefine dispersion trade universe"]:::none
-    s1_2["Quant: 1.2\nCompute realized vs implied correlation"]:::none
-    s1_3["Quant: 1.3\nCalculate dispersion Z-score"]:::none
-    s1_4["Quant: 1.4\nClassify current volatility regime"]:::soft
-    s1_5["Quant: 1.5\nGenerate dispersion entry signals"]:::none
-    s1_6["Quant: 1.6\nScreen idiosyncratic volatility opportunities"]:::soft
-    s1_7["Quant: 1.7\nScreen volatility harvesting opportunities"]:::soft
+    s1_1["Quant: 1.1<br/>Define dispersion trade universe"]:::none
+    s1_2["Quant: 1.2<br/>Compute realized vs implied correlation"]:::none
+    s1_3["Quant: 1.3<br/>Calculate dispersion Z-score"]:::none
+    s1_4["Quant: 1.4<br/>Classify current volatility regime"]:::soft
+    s1_5["Quant: 1.5<br/>Generate dispersion entry signals"]:::none
+    s1_6["Quant: 1.6<br/>Screen idiosyncratic volatility opportunities"]:::soft
+    s1_7["Quant: 1.7<br/>Screen volatility harvesting opportunities"]:::soft
     s1_1 --> s1_2 --> s1_3 --> s1_4 --> s1_5 --> s1_6 --> s1_7
   end
   START --> s1_1
   s1_7 --> O1[/"Eligible Trade Universe"/]:::output
 
   subgraph S2["STAGE 2: RESEARCH AGGREGATION"]
-    s2_1["Quant: 2.1\nCalibrate stochastic volatility model"]:::none
-    s2_2["Quant: 2.2\nEstimate cross-asset correlation matrix"]:::none
-    s2_3["Quant: 2.3\nBuild comprehensive Greeks engine"]:::none
-    s2_4["Quant: 2.4\nBacktest dispersion strategy"]:::none
-    s2_5["Analyst: 2.5\nAggregate sell-side research"]:::soft
-    s2_6["Quant: 2.6\nBacktest volatility harvesting & directional strategies"]:::none
+    s2_1["Quant: 2.1<br/>Calibrate stochastic volatility model"]:::none
+    s2_2["Quant: 2.2<br/>Estimate cross-asset correlation matrix"]:::none
+    s2_3["Quant: 2.3<br/>Build comprehensive Greeks engine"]:::none
+    s2_4["Quant: 2.4<br/>Backtest dispersion strategy"]:::none
+    s2_5["Analyst: 2.5<br/>Aggregate sell-side research"]:::soft
+    s2_6["Quant: 2.6<br/>Backtest volatility harvesting & directional strategies"]:::none
     s2_1 --> s2_2 --> s2_3 --> s2_4 --> s2_5 --> s2_6
   end
   O1 --> s2_1
   s2_6 --> O2[/"Calibrated Models & Backtest"/]:::output
 
   subgraph S3["STAGE 3: COLLABORATION & PEER REVIEW"]
-    s3_1["Portfolio Manager: 3.1\nReview dispersion signal quality"]:::none
-    GATE1{"Portfolio Manager: 3.1\nSignal Quality Gate"}:::none
-    s3_2["Risk Manager: 3.2\nStress-test correlation matrix"]:::none
-    s3_3["Portfolio Manager: 3.3\nEvaluate volatility harvesting overlay"]:::none
-    s3_4["Portfolio Manager & Risk Manager: 3.4\nFormulate directional volatility views"]:::none
-    s3_5["Portfolio Manager: 3.5\nAssess counterparty risk & ISDA documentation"]:::soft
+    s3_1["Portfolio Manager: 3.1<br/>Review dispersion signal quality"]:::none
+    GATE1{"Portfolio Manager: 3.1<br/>Signal Quality Gate"}:::none
+    s3_2["Risk Manager: 3.2<br/>Stress-test correlation matrix"]:::none
+    s3_3["Portfolio Manager: 3.3<br/>Evaluate volatility harvesting overlay"]:::none
+    s3_4["Portfolio Manager & Risk Manager: 3.4<br/>Formulate directional volatility views"]:::none
+    s3_5["Portfolio Manager: 3.5<br/>Assess counterparty risk & ISDA documentation"]:::soft
     s3_1 --> GATE1
     GATE1 -- Approve --> s3_2 --> s3_3 --> s3_4 --> s3_5
   end
@@ -170,30 +169,30 @@ flowchart TD
   s3_5 --> O3[/"Stress Tests & Peer Review"/]:::output
 
   subgraph S4["STAGE 4: THESIS DEVELOPMENT"]
-    s4_1["Portfolio Manager: 4.1\nDraft investment thesis memo"]:::none
-    s4_2["Quant: 4.2\nDesign index short volatility leg"]:::none
-    s4_3["Quant: 4.3\nDesign constituent long volatility leg"]:::none
-    s4_4["Quant: 4.4\nDesign volatility harvesting positions"]:::none
-    s4_5["Quant: 4.5\nDesign directional volatility positions"]:::none
-    s4_6["Quant: 4.6\nVerify portfolio Greeks & constraints"]:::none
-    s4_7["Quant: 4.7\nSpecify volatility-targeting framework"]:::none
-    s4_8["Quant: 4.8\nDesign tail-risk hedging & collar overlay"]:::none
-    s4_9["Risk Manager: 4.9\nRun full scenario analysis"]:::none
-    s4_10["Quant: 4.10\nDesign attribution methodology"]:::none
-    s4_11["Portfolio Manager: 4.11\nFinalize Investment Committee memorandum"]:::none
+    s4_1["Portfolio Manager: 4.1<br/>Draft investment thesis memo"]:::none
+    s4_2["Quant: 4.2<br/>Design index short volatility leg"]:::none
+    s4_3["Quant: 4.3<br/>Design constituent long volatility leg"]:::none
+    s4_4["Quant: 4.4<br/>Design volatility harvesting positions"]:::none
+    s4_5["Quant: 4.5<br/>Design directional volatility positions"]:::none
+    s4_6["Quant: 4.6<br/>Verify portfolio Greeks & constraints"]:::none
+    s4_7["Quant: 4.7<br/>Specify volatility-targeting framework"]:::none
+    s4_8["Quant: 4.8<br/>Design tail-risk hedging & collar overlay"]:::none
+    s4_9["Risk Manager: 4.9<br/>Run full scenario analysis"]:::none
+    s4_10["Quant: 4.10<br/>Design attribution methodology"]:::none
+    s4_11["Portfolio Manager: 4.11<br/>Finalize Investment Committee memorandum"]:::none
     s4_1 --> s4_2 --> s4_3 --> s4_4 --> s4_5 --> s4_6 --> s4_7 --> s4_8 --> s4_9 --> s4_10 --> s4_11
   end
   O3 --> s4_1
   s4_11 --> O4[/"Investment Committee Memorandum"/]:::output
 
   subgraph S5["STAGE 5: DECISION, APPROVAL, & PORTFOLIO CONSTRUCTION"]
-    s5_1["Portfolio Manager: 5.1\nPresent portfolio proposal to Investment Committee"]:::none
-    GATE2{"Investment Committee: 5.2\nApproval Vote?"}:::hard
-    s5_3["Compliance: 5.3\nClear compliance requirements"]:::soft
-    s5_4["Quant: 5.4\nGenerate execution schedule"]:::none
-    s5_5["Trader: 5.5\nExecute index option legs"]:::hard
-    s5_6["Trader: 5.6\nExecute constituent & Over-the-Counter legs"]:::hard
-    s5_7["Operations: 5.7\nReconcile trades & confirm margin"]:::soft
+    s5_1["Portfolio Manager: 5.1<br/>Present portfolio proposal to Investment Committee"]:::none
+    GATE2{"Investment Committee: 5.2<br/>Approval Vote?"}:::hard
+    s5_3["Compliance: 5.3<br/>Clear compliance requirements"]:::soft
+    s5_4["Quant: 5.4<br/>Generate execution schedule"]:::none
+    s5_5["Trader: 5.5<br/>Execute index option legs"]:::hard
+    s5_6["Trader: 5.6<br/>Execute constituent & Over-the-Counter legs"]:::hard
+    s5_7["Operations: 5.7<br/>Reconcile trades & confirm margin"]:::soft
     s5_1 --> GATE2
     GATE2 -- Approved --> s5_3 --> s5_4 --> s5_5 --> s5_6 --> s5_7
   end
@@ -203,12 +202,12 @@ flowchart TD
   s5_7 --> O5[/"Live Portfolio"/]:::output
 
   subgraph S6["STAGE 6: MONITORING & REVIEW"]
-    s6_1["Risk Manager: 6.1\nMonitor portfolio Greeks daily"]:::soft
-    s6_2["Quant: 6.2\nTrack multi-strategy Profit & Loss attribution"]:::soft
-    s6_3["Quant: 6.3\nUpdate regime classification"]:::soft
-    GATE3{"Portfolio Manager: 6.4\nThesis Drift?"}:::none
-    s6_5["Risk Manager: 6.5\nRun weekly tail-risk diagnostic"]:::none
-    s6_6["Portfolio Manager: 6.6\nManage constituent earnings events"]:::none
+    s6_1["Risk Manager: 6.1<br/>Monitor portfolio Greeks daily"]:::soft
+    s6_2["Quant: 6.2<br/>Track multi-strategy Profit & Loss attribution"]:::soft
+    s6_3["Quant: 6.3<br/>Update regime classification"]:::soft
+    GATE3{"Portfolio Manager: 6.4<br/>Thesis Drift?"}:::none
+    s6_5["Risk Manager: 6.5<br/>Run weekly tail-risk diagnostic"]:::none
+    s6_6["Portfolio Manager: 6.6<br/>Manage constituent earnings events"]:::none
     s6_1 --> s6_2 --> s6_3 --> GATE3
     GATE3 -- Maintain --> s6_5 --> s6_6
   end
@@ -219,19 +218,19 @@ flowchart TD
   s6_6 --> O6[/"Daily Risk Reports & Attribution"/]:::output
 
   subgraph S7["STAGE 7: REBALANCING & LIQUIDITY"]
-    s7_1["Quant: 7.1\nCompute optimal rebalancing trades"]:::none
-    s7_2["Quant: 7.2\nAdjust volatility-target leverage"]:::none
-    s7_3["Portfolio Manager: 7.3\nApprove rebalancing package"]:::none
-    s7_4["Trader: 7.4\nExecute rebalancing trades"]:::hard
-    s7_5["Quant: 7.5\nVerify post-rebalance portfolio"]:::none
-    s7_6["Portfolio Manager: 7.6\nPrepare monthly investor report"]:::none
+    s7_1["Quant: 7.1<br/>Compute optimal rebalancing trades"]:::none
+    s7_2["Quant: 7.2<br/>Adjust volatility-target leverage"]:::none
+    s7_3["Portfolio Manager: 7.3<br/>Approve rebalancing package"]:::none
+    s7_4["Trader: 7.4<br/>Execute rebalancing trades"]:::hard
+    s7_5["Quant: 7.5<br/>Verify post-rebalance portfolio"]:::none
+    s7_6["Portfolio Manager: 7.6<br/>Prepare monthly investor report"]:::none
     s7_1 --> s7_2 --> s7_3 --> s7_4 --> s7_5 --> s7_6
   end
   O6 --> s7_1
   s7_4 -. "Tactical: Back to Monitoring" .-> s6_1
   s7_6 --> O7[/"Rebalance Package & Investor Report"/]:::output
 
-  O7 --> DEC{"Action\nDecision"}:::none
+  O7 --> DEC{"Action<br/>Decision"}:::none
   DEC -- Hold --> s6_1
   DEC -- Rebalance --> s7_1
   DEC -. "Fundamental: Full Rebuild" .-> s1_1
@@ -255,7 +254,7 @@ mermaid.initialize({
   startOnLoad: true,
   theme: 'base',
   securityLevel: 'loose',
-  flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis', padding: 12 }
+  flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis', padding: 18, nodeSpacing: 30, rankSpacing: 40, wrappingWidth: 200 }
 });
 </script>
 </body>
