@@ -72,6 +72,35 @@ body {
   margin-bottom: 28px;
   background: rgba(62,207,180,0.06);
 }
+.hero-links {
+  margin-top: 18px;
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.hero-links a {
+  display: inline-block;
+  padding: 8px 22px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+.hero-links .btn-primary {
+  background: var(--accent-teal);
+  color: var(--bg-body);
+  border: 1px solid var(--accent-teal);
+}
+.hero-links .btn-primary:hover { opacity: 0.85; }
+.hero-links .btn-outline {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.hero-links .btn-outline:hover { border-color: var(--accent-teal); color: var(--accent-teal); }
 .hero h1 {
   font-family: 'Playfair Display', serif;
   font-size: clamp(32px, 5vw, 56px);
@@ -451,6 +480,10 @@ body {
   <div class="badge">Systematic Volatility · Workflow Process Map</div>
   <h1>Systematic Volatility <span class="accent">Portfolio Process</span></h1>
   <p class="subtitle">Build and manage a five-leg systematic volatility portfolio: dispersion (core), volatility harvesting, directional long/short, dynamic volatility targeting, and option overlays — from signal construction through execution and ongoing risk monitoring.</p>
+  <div class="hero-links">
+    <a href="workflow.html" class="btn-primary">View Workflow Map</a>
+    <a href="#tab-master" class="btn-outline" onclick="switchTab('master'); return false;">Interactive Dashboard</a>
+  </div>
   <div class="stats-row">
     <div class="stat-card"><div class="num">7</div><div class="lbl">Stages</div></div>
     <div class="stat-card"><div class="num">5</div><div class="lbl">Strategy Legs</div></div>
@@ -1261,4 +1294,3 @@ function switchTab(id) {
 </script>
 </body>
 </html>
-v5: multi-strategy, actor-prefixed flowcharts
