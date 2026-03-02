@@ -512,7 +512,7 @@ body {
     <div class="info-row"><span class="k">Investment Committee Approval (3-way)</span><span class="v">Step 5.2</span></div>
     <div class="info-row"><span class="k">Compliance Clearance</span><span class="v">Step 5.3</span></div>
     <div class="info-row"><span class="k">Thesis Drift Assessment</span><span class="v">Step 6.4</span></div>
-    <div class="info-row"><span class="k">Rebalance Approval</span><span class="v">Step 7.3</span></div>
+    <div class="info-row"><span class="k">Action Decision</span><span class="v">After Step 7.6</span></div>
   </div>
   <div class="info-card">
     <h3>Blocker Distribution</h3>
@@ -693,21 +693,22 @@ flowchart TD
     G1N["Quant: 7.1<br/>Compute optimal rebalancing trades"]
     G2N["Quant: 7.2<br/>Adjust volatility-target leverage"]
     G3N["Portfolio Manager: 7.3<br/>Approve rebalancing package"]
-    G4{"Action<br/>Decision"}:::gate
     G4N["Trader: 7.4<br/>Execute rebalancing trades"]:::hard
     G5N["Quant: 7.5<br/>Verify post-rebalance portfolio"]
     G6N["Portfolio Manager: 7.6<br/>Prepare monthly investor report"]
-    G1N --> G2N --> G3N --> G4
-    G4 -- Execute --> G4N --> G5N --> G6N
+    G1N --> G2N --> G3N --> G4N --> G5N --> G6N
   end
-  G4 -. "Hold" .-> F1
   G6N --> O7[/"Rebalance Package & Investor Report"/]:::output
 
   G5N -. "Strategic: Regime Shift" .-> A5
   G4N -. "Tactical: Back to Monitoring" .-> F1
-  O7 -. "Fundamental: Full Rebuild" .-> A1
 
-  O7 --> ENDNODE(["END / NEXT CYCLE"]):::entry
+  O7 --> ADEC{"Action<br/>Decision"}:::gate
+  ADEC -- Rebalance --> G1N
+  ADEC -. "Hold" .-> F1
+  ADEC -. "Fundamental: Full Rebuild" .-> A1
+
+  ADEC --> ENDNODE(["END / NEXT CYCLE"]):::entry
 
   classDef default fill:#1a2e4a,stroke:#4a7aaa,stroke-width:1.5px,color:#e2e8f0
   classDef soft fill:#3d3a1a,stroke:#d8a843,stroke-width:2px,color:#f0e6b8
@@ -1086,19 +1087,19 @@ flowchart TD
     G1N["Quant: 7.1<br/>Compute optimal rebalancing trades"]
     G2N["Quant: 7.2<br/>Adjust volatility-target leverage"]
     G3N["Portfolio Manager: 7.3<br/>Approve rebalancing package"]
-    G4{"Action<br/>Decision"}:::gate
     G4N["Trader: 7.4<br/>Execute rebalancing trades"]:::hard
     G5N["Quant: 7.5<br/>Verify post-rebalance portfolio"]
     G6N["Portfolio Manager: 7.6<br/>Prepare monthly investor report"]
-    G1N --> G2N --> G3N --> G4
-    G4 -- Execute --> G4N --> G5N --> G6N
+    G1N --> G2N --> G3N --> G4N --> G5N --> G6N
   end
-  G4 -. "Hold → Stage 6" .-> BACK6(["← Stage 6"]):::entry
-  G5N -. "Strategic: Regime Shift → Stage 1" .-> BACK1(["← Stage 1"]):::entry
   G4N -. "Tactical: Back to Monitoring" .-> BACK6B(["← Stage 6"]):::entry
+  G5N -. "Strategic: Regime Shift → Stage 1" .-> BACK1(["← Stage 1"]):::entry
   G6N --> O7[/"Rebalance Package & Investor Report"/]:::output
-  O7 -. "Fundamental: Full Rebuild" .-> BACK1B(["← Stage 1"]):::entry
-  O7 --> ENDNODE(["END / NEXT CYCLE"]):::entry
+  O7 --> ADEC{"Action<br/>Decision"}:::gate
+  ADEC -- Rebalance --> G1N
+  ADEC -. "Hold → Stage 6" .-> BACK6(["← Stage 6"]):::entry
+  ADEC -. "Fundamental: Full Rebuild" .-> BACK1B(["← Stage 1"]):::entry
+  ADEC --> ENDNODE(["END / NEXT CYCLE"]):::entry
 
   classDef default fill:#1a2e4a,stroke:#4a7aaa,stroke-width:1.5px,color:#e2e8f0
   classDef soft fill:#3d3a1a,stroke:#d8a843,stroke-width:2px,color:#f0e6b8
