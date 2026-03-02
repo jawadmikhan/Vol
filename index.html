@@ -342,10 +342,10 @@ body {
   color: var(--accent-teal);
   margin-bottom: 16px;
 }
-.ref-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border-subtle); font-size: 13px; }
+.ref-row { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; border-bottom: 1px solid var(--border-subtle); font-size: 12px; }
 .ref-row:last-child { border-bottom: none; }
-.ref-row .k { color: var(--text-secondary); }
-.ref-row .v { color: var(--text-primary); font-weight: 500; text-align: right; max-width: 55%; }
+.ref-row .k { color: var(--text-secondary); flex-shrink: 0; }
+.ref-row .v { color: var(--text-primary); font-weight: 500; text-align: right; }
 
 /* ─── COLOR LEGEND ─── */
 .legend-section {
