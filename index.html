@@ -327,7 +327,7 @@ body {
   padding: 0 40px 80px;
 }
 .ref-section h2 { font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 24px; }
-.ref-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: start; }
+.ref-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
 .ref-card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -342,10 +342,10 @@ body {
   color: var(--accent-teal);
   margin-bottom: 16px;
 }
-.ref-row { display: grid; grid-template-columns: auto 1fr; gap: 4px 20px; padding: 5px 0; border-bottom: 1px solid var(--border-subtle); font-size: 13px; }
+.ref-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border-subtle); font-size: 13px; }
 .ref-row:last-child { border-bottom: none; }
-.ref-row .k { color: var(--text-secondary); white-space: nowrap; }
-.ref-row .v { color: var(--text-primary); font-weight: 500; text-align: right; }
+.ref-row .k { color: var(--text-secondary); }
+.ref-row .v { color: var(--text-primary); font-weight: 500; text-align: left; }
 
 /* ─── COLOR LEGEND ─── */
 .legend-section {
@@ -1149,7 +1149,7 @@ flowchart TD
       <div class="ref-row"><span class="k">5.2 Investment Committee Approval</span><span class="v">Approved / Conditional / Rejected</span></div>
       <div class="ref-row"><span class="k">5.3 Compliance</span><span class="v">Clear / Fail (with limits)</span></div>
       <div class="ref-row"><span class="k">6.4 Thesis Drift</span><span class="v">Maintain / Adjust / Unwind</span></div>
-      <div class="ref-row"><span class="k">Action Decision (after 7.6)</span><span class="v">Rebalance / Hold / Full Rebuild</span></div>
+      <div class="ref-row"><span class="k">7.3 Rebalance</span><span class="v">Approve / Modify</span></div>
     </div>
     <div class="ref-card">
       <div class="ref-label">Feedback Loops</div>
