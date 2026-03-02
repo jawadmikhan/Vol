@@ -327,7 +327,7 @@ body {
   padding: 0 40px 80px;
 }
 .ref-section h2 { font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 24px; }
-.ref-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; align-items: start; }
+.ref-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: start; }
 .ref-card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -342,10 +342,10 @@ body {
   color: var(--accent-teal);
   margin-bottom: 16px;
 }
-.ref-row { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; padding: 5px 0; border-bottom: 1px solid var(--border-subtle); font-size: 13px; }
+.ref-row { display: grid; grid-template-columns: auto 1fr; gap: 4px 20px; padding: 5px 0; border-bottom: 1px solid var(--border-subtle); font-size: 13px; }
 .ref-row:last-child { border-bottom: none; }
-.ref-row .k { color: var(--text-secondary); }
-.ref-row .v { color: var(--text-primary); font-weight: 500; }
+.ref-row .k { color: var(--text-secondary); white-space: nowrap; }
+.ref-row .v { color: var(--text-primary); font-weight: 500; text-align: right; }
 
 /* ─── COLOR LEGEND ─── */
 .legend-section {
