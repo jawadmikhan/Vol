@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Portfolio | Systematic Volatility Portfolio Process</title>
+    <meta name="description" content="$250M Systematic Volatility Mock Portfolio — 5 Sub-Strategies, Reference Data, Greeks, Scenarios">
+    <style>
+        /* ═══════════════════════════════════════════════════════════
+           DESIGN SYSTEM — Matches jawadmikhan.github.io/Vol exactly
+           ═══════════════════════════════════════════════════════════ */
+        :root {
+            --bg-body: #0d1117;
+            --bg-section: #1a2332;
+            --bg-card: #1a2e4a;
+            --bg-card-hover: #1f3556;
+            --bg-input: #101824;
+            --border: #2a3e5c;
+            --border-accent: #4a7aaa;
+            --text-primary: #e2e8f0;
+            --text-secondary: #8899aa;
+            --text-dim: #5a6a7a;
+            --teal: #3ecfb4;
+            --teal-dim: rgba(62, 207, 180, 0.12);
+            --teal-glow: rgba(62, 207, 180, 0.25);
+            --gold: #d8a843;
+            --gold-dim: rgba(216, 168, 67, 0.12);
+            --red: #e06060;
+            --red-dim: rgba(224, 96, 96, 0.12);
+            --green: #48b884;
+            --green-dim: rgba(72, 184, 132, 0.12);
+            --blue: #4a7aaa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            line-height: 1.65;
+            font-size: 15px;
+        }
+
+        a { color: var(--teal); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* ── Top Bar ── */
+        .topbar {
+            background: var(--bg-section);
+            border-bottom: 1px solid var(--border);
+            padding: 0.6rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-brand {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.03em;
+        }
+
+        .topbar-brand strong {
+            color: var(--teal);
+            font-weight: 600;
+        }
+
+        .topbar-nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .topbar-nav a {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+
+        .topbar-nav a:hover { color: var(--teal); text-decoration: none; }
+
+        /* ── Hero ── */
+        .hero {
+            padding: 3.5rem 2rem 2.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero-eyebrow {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-eyebrow strong { color: var(--teal); }
+
+        .hero h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+        }
+
+        .hero-desc {
+            color: var(--text-secondary);
+            max-width: 750px;
+            font-size: 0.92rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-links {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1.1rem;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--teal);
+            color: var(--bg-body);
+        }
+
+        .btn-primary:hover { opacity: 0.85; text-decoration: none; }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover { border-color: var(--border-accent); text-decoration: none; }
+
+        /* ── Stats Bar ── */
+        .stats-bar {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 2rem 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .stat-item {
+            background: var(--bg-section);
+            padding: 1.1rem 0.75rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--teal);
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            margin-top: 0.2rem;
+            letter-spacing: 0.02em;
+        }
+
+        /* ── Section ── */
+        .section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .section + .section { padding-top: 0; }
+
+        .section-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-badge {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-teal { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(62,207,180,0.2); }
+        .badge-gold { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(216,168,67,0.2); }
+        .badge-red  { background: var(--red-dim);  color: var(--red);  border: 1px solid rgba(224,96,96,0.2); }
+        .badge-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(72,184,132,0.2); }
+
+        .section h2 {
+            font-size: 1.45rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        .section-desc {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            max-width: 700px;
+        }
+
+        /* ── Divider ── */
+        .divider {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* ── Strategy Cards ── */
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .strategy-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.4rem;
+            transition: border-color 0.3s, background 0.3s;
+        }
+
+        .strategy-card:hover {
+            border-color: var(--border-accent);
+            background: var(--bg-card-hover);
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.6rem;
+        }
+
+        .card-num {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            letter-spacing: 0.05em;
+        }
+
+        .card-weight {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--teal);
+            background: var(--teal-dim);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .card-capital {
+            font-size: 0.82rem;
+            color: var(--teal);
+            margin-bottom: 0.6rem;
+            font-weight: 500;
+        }
+
+        .card-desc {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+        }
+
+        .tag {
+            font-size: 0.62rem;
+            padding: 0.15rem 0.45rem;
+            border-radius: 3px;
+            background: rgba(74, 122, 170, 0.15);
+            color: var(--blue);
+            border: 1px solid rgba(74, 122, 170, 0.25);
+            letter-spacing: 0.02em;
+        }
+
+        /* ── Tables ── */
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        thead th {
+            background: var(--bg-card);
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            color: var(--text-secondary);
+            text-align: left;
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 0.65rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        tbody tr:last-child td { border-bottom: none; }
+
+        tbody tr:hover td { background: rgba(26, 46, 74, 0.3); }
+
+        .mono {
+            font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+            font-size: 0.8rem;
+        }
+
+        .val { color: var(--text-primary); font-weight: 500; }
+        .teal-text { color: var(--teal); }
+        .gold-text { color: var(--gold); }
+        .red-text { color: var(--red); }
+        .green-text { color: var(--green); }
+
+        /* ── Greeks Dashboard ── */
+        .greeks-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .greek-cell {
+            background: var(--bg-section);
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .greek-name {
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            letter-spacing: 0.05em;
+            margin-bottom: 0.3rem;
+        }
+
+        .greek-val {
+            font-size: 1.15rem;
+            font-weight: 700;
+            font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+        }
+
+        /* ── Scenario Cards ── */
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .scenario-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .scenario-card.spike { border-left: 3px solid var(--red); }
+        .scenario-card.collapse { border-left: 3px solid var(--green); }
+
+        .scenario-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.3rem;
+        }
+
+        .scenario-vix {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .scenario-sub {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-bottom: 0.75rem;
+        }
+
+        .scenario-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+            font-size: 0.78rem;
+            border-bottom: 1px solid rgba(42,62,92,0.5);
+        }
+
+        .scenario-row:last-child { border-bottom: none; }
+        .scenario-row .lbl { color: var(--text-dim); }
+
+        /* ── Timeline ── */
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .tl-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .tl-item::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 6px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--bg-body);
+            border: 2px solid var(--border-accent);
+        }
+
+        .tl-item.done::before { background: var(--teal); border-color: var(--teal); }
+
+        .tl-phase {
+            font-size: 0.68rem;
+            color: var(--teal);
+            font-weight: 600;
+            letter-spacing: 0.03em;
+        }
+
+        .tl-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 0.1rem 0;
+        }
+
+        .tl-desc {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+
+        .tl-capital {
+            font-size: 0.78rem;
+            color: var(--green);
+            font-weight: 500;
+            margin-top: 0.15rem;
+        }
+
+        /* ── Reference Files Grid ── */
+        .ref-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 0.6rem;
+        }
+
+        .ref-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.85rem 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .ref-item:hover { border-color: var(--border-accent); }
+
+        .ref-icon { font-size: 1.3rem; flex-shrink: 0; }
+
+        .ref-name {
+            font-size: 0.78rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+        }
+
+        .ref-desc {
+            font-size: 0.68rem;
+            color: var(--text-dim);
+        }
+
+        /* ── Code Block ── */
+        .code-block {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem 1.5rem;
+            font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+            font-size: 0.78rem;
+            line-height: 1.9;
+            overflow-x: auto;
+            color: var(--text-secondary);
+        }
+
+        .code-block .comment { color: var(--text-dim); }
+        .code-block .cmd { color: var(--teal); }
+
+        /* ── Footer ── */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .topbar-nav { display: none; }
+            .strategy-grid { grid-template-columns: 1fr; }
+            .scenario-grid { grid-template-columns: 1fr; }
+            .greeks-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero h1 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══ Top Bar ═══ -->
+<div class="topbar">
+    <div class="topbar-brand"><strong>Systematic Volatility</strong> · Mock Portfolio</div>
+    <nav class="topbar-nav">
+        <a href="index.html">← Workflow Map</a>
+        <a href="#strategies">Strategies</a>
+        <a href="#constraints">Constraints</a>
+        <a href="#risk">Risk</a>
+        <a href="#timeline">Timeline</a>
+        <a href="#data">Data</a>
+        <a href="https://github.com/jawadmikhan/Vol" target="_blank">GitHub ↗</a>
+    </nav>
+</div>
+
+<!-- ═══ Hero ═══ -->
+<div class="hero">
+    <div class="hero-eyebrow"><strong>Systematic Volatility</strong> · Mock Portfolio Implementation</div>
+    <h1>$250M Systematic Volatility Portfolio</h1>
+    <p class="hero-desc">
+        Complete mock portfolio for a five-leg systematic volatility book — dispersion (core), volatility harvesting, directional long/short, dynamic volatility targeting, and option overlays — with synthetic reference data, portfolio-level Greeks, scenario analysis, and a 60-day phased implementation timeline.
+    </p>
+    <div class="hero-links">
+        <a href="index.html" class="btn btn-primary">View Workflow Map</a>
+        <a href="https://github.com/jawadmikhan/Vol" class="btn btn-secondary" target="_blank">Source Code</a>
+    </div>
+</div>
+
+<!-- ═══ Stats ═══ -->
+<div class="stats-bar">
+    <div class="stat-item">
+        <div class="stat-value">$250M</div>
+        <div class="stat-label">Total Capital</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value">5</div>
+        <div class="stat-label">Sub-Strategies</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value">$500M</div>
+        <div class="stat-label">Notional Cap</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value">45</div>
+        <div class="stat-label">Name Universe</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value">48</div>
+        <div class="stat-label">Workflow Steps</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value">60</div>
+        <div class="stat-label">Build-Up Days</div>
+    </div>
+</div>
+
+<!-- ═══ Strategies ═══ -->
+<div class="section" id="strategies">
+    <div class="section-header">
+        <span class="section-badge badge-teal">Sub-Strategies</span>
+        <h2>Five Integrated Strategy Legs</h2>
+        <p class="section-desc">Each strategy is independently modeled with signal generation, position construction, and Greeks computation — then aggregated at the portfolio level for risk management.</p>
+    </div>
+    <div class="strategy-grid">
+        <div class="strategy-card">
+            <div class="card-top">
+                <div class="card-num">STRATEGY 01</div>
+                <div class="card-weight">40%</div>
+            </div>
+            <div class="card-title">Dispersion Trading</div>
+            <div class="card-capital">$100,000,000</div>
+            <div class="card-desc">Exploit structural mispricing between index and constituent implied volatility via correlation overpricing. Entry requires decomposing index implied volatility into a weighted sum of constituent implied volatilities adjusted for realized pairwise correlations.</div>
+            <div class="card-tags">
+                <span class="tag">Implied Correlation</span>
+                <span class="tag">Z-Score Entry</span>
+                <span class="tag">12-Name Book</span>
+                <span class="tag">Delta-Hedged</span>
+            </div>
+        </div>
+        <div class="strategy-card">
+            <div class="card-top">
+                <div class="card-num">STRATEGY 02</div>
+                <div class="card-weight">20%</div>
+            </div>
+            <div class="card-title">Volatility Harvesting</div>
+            <div class="card-capital">$50,000,000</div>
+            <div class="card-desc">Short variance swaps capturing the structural realized-versus-implied spread. Includes the critical convexity adjustment between variance notional and vega notional — the practitioner distinction models routinely miss.</div>
+            <div class="card-tags">
+                <span class="tag">Short Variance</span>
+                <span class="tag">$80M Notional Cap</span>
+                <span class="tag">Convexity Adjustment</span>
+            </div>
+        </div>
+        <div class="strategy-card">
+            <div class="card-top">
+                <div class="card-num">STRATEGY 03</div>
+                <div class="card-weight">15%</div>
+            </div>
+            <div class="card-title">Directional Long/Short</div>
+            <div class="card-capital">$37,500,000</div>
+            <div class="card-desc">Regime-dependent directional volatility exposure classified using VIX term structure, VVIX, and the ratio of realized-to-implied volatility. Three distinct regimes with differentiated sizing rules and stop-loss logic.</div>
+            <div class="card-tags">
+                <span class="tag">3-Regime Classifier</span>
+                <span class="tag">VIX Term Structure</span>
+                <span class="tag">VVIX</span>
+                <span class="tag">Stop-Loss Rules</span>
+            </div>
+        </div>
+        <div class="strategy-card">
+            <div class="card-top">
+                <div class="card-num">STRATEGY 04</div>
+                <div class="card-weight">15%</div>
+            </div>
+            <div class="card-title">Dynamic Volatility Targeting</div>
+            <div class="card-capital">$37,500,000</div>
+            <div class="card-desc">Maintain portfolio at 12% annualized volatility by adjusting exposure inversely to 20-day realized volatility. Rebalancing triggered when realized volatility deviates by more than 2 percentage points from target.</div>
+            <div class="card-tags">
+                <span class="tag">12% Target</span>
+                <span class="tag">20-Day Lookback</span>
+                <span class="tag">2pp Trigger</span>
+                <span class="tag">Transaction Cost</span>
+            </div>
+        </div>
+        <div class="strategy-card">
+            <div class="card-top">
+                <div class="card-num">STRATEGY 05</div>
+                <div class="card-weight">10%</div>
+            </div>
+            <div class="card-title">Option Overlays</div>
+            <div class="card-capital">$25,000,000</div>
+            <div class="card-desc">Protective puts and collars self-financing within 75 basis points annual drag. Three staggered tranches of rolling 3-month 5% out-of-the-money puts, financed by 10-delta calls. Tail-risk put spread survives a 30% drawdown.</div>
+            <div class="card-tags">
+                <span class="tag">75bp Ceiling</span>
+                <span class="tag">3-Tranche Roll</span>
+                <span class="tag">Collar Financing</span>
+                <span class="tag">Tail-Risk Hedge</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══ Constraints ═══ -->
+<div class="section" id="constraints">
+    <div class="section-header">
+        <span class="section-badge badge-gold">Investment Committee Mandate</span>
+        <h2>Portfolio Constraints</h2>
+        <p class="section-desc">All positions are validated against these hard constraints from the Investment Committee. Positions breaching any limit trigger automatic review.</p>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Constraint</th>
+                    <th>Parameter</th>
+                    <th>Value</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Total Capital</td><td class="val">Book Size</td><td class="val mono">$250,000,000</td><td class="green-text">● Allocated</td></tr>
+                <tr><td>Gross Notional Cap</td><td class="val">All Strategies</td><td class="val mono">$500,000,000</td><td class="green-text">● 71% Utilization</td></tr>
+                <tr><td>Net Vega Exposure</td><td class="val">Per 1-Point VIX Move</td><td class="val mono">−$2M to +$4M</td><td class="green-text">● Within Bounds</td></tr>
+                <tr><td>Dispersion Sleeve</td><td class="val">Maximum Capital</td><td class="val mono">40% ($100M)</td><td class="green-text">● Compliant</td></tr>
+                <tr><td>Short Variance Notional</td><td class="val">Volatility Harvesting</td><td class="val mono">$80,000,000</td><td class="green-text">● Capped</td></tr>
+                <tr><td>Volatility Target</td><td class="val">Annualized</td><td class="val mono">12%</td><td class="green-text">● Active</td></tr>
+                <tr><td>Rebalance Trigger</td><td class="val">20-Day Realized Deviation</td><td class="val mono">> 2 Percentage Points</td><td class="green-text">● Monitoring</td></tr>
+                <tr><td>Option Overlay Drag</td><td class="val">Annual Self-Financing</td><td class="val mono">≤ 75 Basis Points</td><td class="gold-text">● Market-Dependent</td></tr>
+                <tr><td>Tail-Risk Survival</td><td class="val">Drawdown Scenario</td><td class="val mono">30% Index Decline</td><td class="green-text">● Hedged</td></tr>
+                <tr><td>Total Margin</td><td class="val">All Strategies</td><td class="val mono">≤ $180,000,000</td><td class="green-text">● Compliant</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══ Risk ═══ -->
+<div class="section" id="risk">
+    <div class="section-header">
+        <span class="section-badge badge-red">Risk Aggregation</span>
+        <h2>Portfolio Greeks & Scenario Analysis</h2>
+        <p class="section-desc">Aggregate Delta, Gamma, Vega, and Theta in dollar terms across all five sub-strategies, with stress tests for VIX spike to 45 and VIX collapse to 11.</p>
+    </div>
+
+    <div class="greeks-grid">
+        <div class="greek-cell">
+            <div class="greek-name">Delta</div>
+            <div class="greek-val green-text">+$250,000</div>
+        </div>
+        <div class="greek-cell">
+            <div class="greek-name">Gamma</div>
+            <div class="greek-val green-text">+$4,725</div>
+        </div>
+        <div class="greek-cell">
+            <div class="greek-name">Vega</div>
+            <div class="greek-val green-text">+$86,500</div>
+        </div>
+        <div class="greek-cell">
+            <div class="greek-name">Theta</div>
+            <div class="greek-val red-text">−$2,590</div>
+        </div>
+    </div>
+
+    <h3 style="font-size:1rem; margin-bottom:0.5rem;">Greeks by Strategy</h3>
+    <div class="table-wrap" style="margin-bottom: 2rem;">
+        <table>
+            <thead>
+                <tr><th>Strategy</th><th>Capital</th><th>Delta</th><th>Gamma</th><th>Vega</th><th>Theta</th></tr>
+            </thead>
+            <tbody>
+                <tr><td class="val">Dispersion Trading</td><td class="mono">$100M</td><td class="mono">$0</td><td class="mono">$0</td><td class="mono">$0</td><td class="mono">$0</td></tr>
+                <tr><td class="val">Volatility Harvesting</td><td class="mono">$50M</td><td class="mono">$0</td><td class="mono">$0</td><td class="mono">$0</td><td class="mono">$0</td></tr>
+                <tr><td class="val">Directional Long/Short</td><td class="mono">$37.5M</td><td class="mono">$0</td><td class="mono">$600</td><td class="mono teal-text">+$24,000</td><td class="mono red-text">−$840</td></tr>
+                <tr><td class="val">Dynamic Volatility Targeting</td><td class="mono">$37.5M</td><td class="mono teal-text">+$750,000</td><td class="mono red-text">−$375</td><td class="mono">$0</td><td class="mono">$0</td></tr>
+                <tr><td class="val">Option Overlay</td><td class="mono">$25M</td><td class="mono red-text">−$500,000</td><td class="mono teal-text">+$4,500</td><td class="mono teal-text">+$62,500</td><td class="mono red-text">−$1,750</td></tr>
+                <tr style="background: var(--bg-card);"><td class="val" style="font-weight:700;">Portfolio Total</td><td class="mono" style="font-weight:700;">$250M</td><td class="mono" style="font-weight:700;">+$250,000</td><td class="mono" style="font-weight:700;">+$4,725</td><td class="mono teal-text" style="font-weight:700;">+$86,500</td><td class="mono red-text" style="font-weight:700;">−$2,590</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3 style="font-size:1rem; margin-bottom:0.75rem;">Mandated Stress Scenarios</h3>
+    <div class="scenario-grid">
+        <div class="scenario-card spike">
+            <div class="scenario-label red-text">STRESS — VIX SPIKE</div>
+            <div class="scenario-vix">VIX → 45</div>
+            <div class="scenario-sub">Correlation Shock: +0.25</div>
+            <div class="scenario-row"><span class="lbl">Dispersion</span><span class="red-text">Correlation spike hurts short-correlation book</span></div>
+            <div class="scenario-row"><span class="lbl">Directional</span><span class="green-text">Long vol position profits from spike</span></div>
+            <div class="scenario-row"><span class="lbl">Option Overlay</span><span class="green-text">Protective puts pay out; tail hedge activates</span></div>
+            <div class="scenario-row"><span class="lbl">Vol Targeting</span><span class="red-text">De-leveraging lag causes drawdown</span></div>
+        </div>
+        <div class="scenario-card collapse">
+            <div class="scenario-label green-text">STRESS — VIX COLLAPSE</div>
+            <div class="scenario-vix">VIX → 11</div>
+            <div class="scenario-sub">Correlation Shock: −0.10</div>
+            <div class="scenario-row"><span class="lbl">Dispersion</span><span class="green-text">Correlation decline benefits the trade</span></div>
+            <div class="scenario-row"><span class="lbl">Vol Harvesting</span><span class="green-text">Full carry earned — realized stays below implied</span></div>
+            <div class="scenario-row"><span class="lbl">Vol Targeting</span><span class="green-text">Leverage increases as realized drops</span></div>
+            <div class="scenario-row"><span class="lbl">Option Overlay</span><span class="red-text">Puts expire worthless (cost = drag)</span></div>
+        </div>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══ Timeline ═══ -->
+<div class="section" id="timeline">
+    <div class="section-header">
+        <span class="section-badge badge-green">Execution</span>
+        <h2>60-Day Implementation Timeline</h2>
+        <p class="section-desc">Phased capital deployment with weekly milestones per the Investment Committee mandate.</p>
+    </div>
+    <div class="timeline">
+        <div class="tl-item done">
+            <div class="tl-phase">Phase 1 — Weeks 1–2 (Days 1–14)</div>
+            <div class="tl-title">Dispersion Legs</div>
+            <div class="tl-desc">Execute index and constituent option legs across the 12-name active book</div>
+            <div class="tl-capital">$100,000,000 deployed → 40% cumulative</div>
+        </div>
+        <div class="tl-item done">
+            <div class="tl-phase">Phase 2 — Weeks 3–4 (Days 15–28)</div>
+            <div class="tl-title">Variance Swaps</div>
+            <div class="tl-desc">Establish short variance swap positions within $80M notional cap</div>
+            <div class="tl-capital">$50,000,000 deployed → 60% cumulative</div>
+        </div>
+        <div class="tl-item">
+            <div class="tl-phase">Phase 3 — Weeks 5–6 (Days 29–42)</div>
+            <div class="tl-title">Directional Volatility Book</div>
+            <div class="tl-desc">Build regime-dependent long/short positions based on current classification</div>
+            <div class="tl-capital">$37,500,000 deployed → 75% cumulative</div>
+        </div>
+        <div class="tl-item">
+            <div class="tl-phase">Phase 4 — Weeks 7–8 (Days 43–56)</div>
+            <div class="tl-title">Volatility Targeting Framework</div>
+            <div class="tl-desc">Activate dynamic rebalancing with 12% annualized target and 20-day signal</div>
+            <div class="tl-capital">$37,500,000 deployed → 90% cumulative</div>
+        </div>
+        <div class="tl-item">
+            <div class="tl-phase">Phase 5 — Weeks 8–9 (Days 50–60)</div>
+            <div class="tl-title">Option Overlays</div>
+            <div class="tl-desc">Layer 3-tranche protective puts, collar financing, and tail-risk put spreads</div>
+            <div class="tl-capital">$25,000,000 deployed → 100% cumulative</div>
+        </div>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══ Reference Data ═══ -->
+<div class="section" id="data">
+    <div class="section-header">
+        <span class="section-badge badge-teal">Reference Data</span>
+        <h2>Synthetic Data Files</h2>
+        <p class="section-desc">All reference data is synthetically generated — no proprietary or live market data required. Designed to match OptionMetrics-style and FactSet-style formatting.</p>
+    </div>
+    <div class="ref-grid">
+        <div class="ref-item">
+            <div class="ref-icon">📊</div>
+            <div><div class="ref-name">implied_vol_surface.csv</div><div class="ref-desc">5 strikes × 6 tenors × 45 names + index · 1,380 rows</div></div>
+        </div>
+        <div class="ref-item">
+            <div class="ref-icon">📈</div>
+            <div><div class="ref-name">realized_vol_history.csv</div><div class="ref-desc">5-year daily GARCH-filtered realized vol · 1,260 days × 46 names</div></div>
+        </div>
+        <div class="ref-item">
+            <div class="ref-icon">🔗</div>
+            <div><div class="ref-name">correlation_matrix.csv</div><div class="ref-desc">46×46 pairwise 90-day realized correlations</div></div>
+        </div>
+        <div class="ref-item">
+            <div class="ref-icon">🔀</div>
+            <div><div class="ref-name">vol_regime_signals.csv</div><div class="ref-desc">24-month VIX term structure + VVIX + regime · 504 days</div></div>
+        </div>
+        <div class="ref-item">
+            <div class="ref-icon">📋</div>
+            <div><div class="ref-name">portfolio_constraints.json</div><div class="ref-desc">Investment Committee mandate parameters</div></div>
+        </div>
+        <div class="ref-item">
+            <div class="ref-icon">🛡️</div>
+            <div><div class="ref-name">option_overlay_specs.json</div><div class="ref-desc">Put/collar program specs and convexity profile</div></div>
+        </div>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══ Quick Start ═══ -->
+<div class="section">
+    <div class="section-header">
+        <span class="section-badge badge-teal">Getting Started</span>
+        <h2>Quick Start</h2>
+    </div>
+    <div class="code-block">
+        <span class="comment"># Clone the repository</span><br>
+        <span class="cmd">git clone</span> https://github.com/jawadmikhan/Vol.git<br>
+        <span class="cmd">cd</span> Vol<br><br>
+        <span class="comment"># Install dependencies</span><br>
+        <span class="cmd">pip install</span> -r requirements.txt<br><br>
+        <span class="comment"># Generate synthetic reference data</span><br>
+        <span class="cmd">python</span> -m data.generators.synthetic_data<br><br>
+        <span class="comment"># Run the full portfolio (all 7 stages)</span><br>
+        <span class="cmd">python</span> main.py<br><br>
+        <span class="comment"># Run constraint validation tests</span><br>
+        <span class="cmd">python</span> tests/test_constraints.py
+    </div>
+</div>
+
+<!-- ═══ Footer ═══ -->
+<div class="footer">
+    Systematic Volatility Portfolio Process · Mock Portfolio · Cross-Asset Trading Strategist / Systematic Quant<br>
+    <a href="index.html">Workflow Map</a> · <a href="https://github.com/jawadmikhan/Vol">GitHub</a>
+</div>
+
+</body>
+</html>
