@@ -489,7 +489,7 @@ body {
     <div class="stat-card"><div class="num">7</div><div class="lbl">Stages</div></div>
     <div class="stat-card"><div class="num">5</div><div class="lbl">Strategy Legs</div></div>
     <div class="stat-card"><div class="num">5</div><div class="lbl">Gates</div></div>
-    <div class="stat-card"><div class="num">8</div><div class="lbl">Outputs</div></div>
+    <div class="stat-card"><div class="num">7</div><div class="lbl">Outputs</div></div>
     <div class="stat-card"><div class="num">3</div><div class="lbl">Feedback Loops</div></div>
     <div class="stat-card"><div class="num">48</div><div class="lbl">Process Nodes</div></div>
   </div>
@@ -639,7 +639,7 @@ flowchart TD
     G1 -- Approve --> C2 --> C3 --> C4 --> C5
   end
   G1 -. "Reject" .-> A4
-  C5 --> O3[/"Stress Tests & Peer Review"/]:::output
+  C5 --> O3[/"Stress Tests & Peer Review"/]:::soft
 
   O3 --> D1
   subgraph S4["STAGE 4: THESIS DEVELOPMENT"]
@@ -704,7 +704,7 @@ flowchart TD
   G4 -. "Hold" .-> F1
   G6N --> O7[/"Rebalance Package & Investor Report"/]:::output
 
-  G5N -. "Strategic: Regime Shift" .-> A5
+  F3 -. "Strategic: Regime Shift" .-> A4
   G4N -. "Tactical: Back to Monitoring" .-> F1
   O7 -. "Fundamental: Full Rebuild" .-> A1
 
@@ -852,7 +852,7 @@ flowchart TD
     G1 -- Approve --> C2 --> C3 --> C4 --> C5
   end
   G1 -. "Reject → Stage 1" .-> BACK1(["← Stage 1"]):::entry
-  C5 --> O3[/"Stress Tests & Peer Review"/]:::output
+  C5 --> O3[/"Stress Tests & Peer Review"/]:::soft
   O3 --> NEXT(["→ Stage 4"]):::entry
 
   classDef default fill:#1a2e4a,stroke:#4a7aaa,stroke-width:1.5px,color:#e2e8f0
@@ -1016,6 +1016,7 @@ flowchart TD
   end
   G3 -. "Adjust → Stage 4" .-> BACK4B(["← Stage 4"]):::entry
   G3 -. "Unwind → Stage 1" .-> BACK1(["← Stage 1"]):::entry
+  F3 -. "Strategic: Regime Shift → Stage 1" .-> BACK1C(["← Stage 1"]):::entry
   F6 --> O6[/"Daily Risk Reports & Attribution"/]:::output
   O6 --> NEXT(["→ Stage 7"]):::entry
 
@@ -1095,7 +1096,6 @@ flowchart TD
     G4 -- Execute --> G4N --> G5N --> G6N
   end
   G4 -. "Hold → Stage 6" .-> BACK6(["← Stage 6"]):::entry
-  G5N -. "Strategic: Regime Shift → Stage 1" .-> BACK1(["← Stage 1"]):::entry
   G4N -. "Tactical: Back to Monitoring" .-> BACK6B(["← Stage 6"]):::entry
   G6N --> O7[/"Rebalance Package & Investor Report"/]:::output
   O7 -. "Fundamental: Full Rebuild" .-> BACK1B(["← Stage 1"]):::entry
@@ -1155,7 +1155,7 @@ flowchart TD
     <div class="ref-card">
       <div class="ref-label">Feedback Loops</div>
       <div class="ref-row"><span class="k">Tactical</span><span class="v">Rebalance → Monitoring (7.4 → 6.1)</span></div>
-      <div class="ref-row"><span class="k">Strategic</span><span class="v">Regime shift → Signal review (6.3 → 1.5)</span></div>
+      <div class="ref-row"><span class="k">Strategic</span><span class="v">Regime shift → Regime classification (6.3 → 1.4)</span></div>
       <div class="ref-row"><span class="k">Fundamental</span><span class="v">Thesis unwind → Universe rebuild (6.4 → 1.1)</span></div>
     </div>
     <div class="ref-card">
