@@ -1,136 +1,108 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Systematic Volatility Portfolio — Workflow Process Map</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: #ffffff;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    color: #333333;
-    padding: 30px 40px;
-  }
-  h1 {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 6px;
-    color: #222;
-  }
-  .subtitle {
-    font-size: 13px;
-    color: #555;
-    margin-bottom: 20px;
-  }
-  .legend {
-    display: flex;
-    gap: 30px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-  }
-  .legend-group {
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 12px 18px;
-  }
-  .legend-group h3 {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: #555;
-    margin-bottom: 8px;
-    letter-spacing: 0.5px;
-  }
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
-    font-size: 12px;
-  }
-  .dot {
-    width: 16px;
-    height: 16px;
-    border-radius: 3px;
-    flex-shrink: 0;
-  }
-  .shape-dot {
-    width: 20px;
-    height: 14px;
-    flex-shrink: 0;
-    border: 2px solid #555;
-  }
-  .shape-oval { border-radius: 50%; }
-  .shape-rect { border-radius: 2px; }
-  .shape-diamond { transform: rotate(45deg); width: 12px; height: 12px; }
-  .shape-para { transform: skewX(-15deg); border-radius: 2px; }
-  .mermaid-wrap {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    background: #fafafa;
-  }
-  .mermaid svg { max-width: 100%; height: auto; }
-  /* Subgraph styling overrides */
-  .mermaid .cluster rect {
-    fill: #f5f5f5 !important;
-    stroke: #999 !important;
-    stroke-width: 1.5px !important;
-    rx: 6 !important;
-  }
-  .mermaid .cluster span {
-    color: #444 !important;
-    fill: #444 !important;
-    font-weight: 700 !important;
-    font-size: 12px !important;
-  }
-  .mermaid .flowchart-link {
-    stroke: #555 !important;
-    stroke-width: 1.5px !important;
-  }
-  .mermaid .edgeLabel {
-    background-color: #fafafa !important;
-    font-size: 11px !important;
-  }
-  .mermaid .edgeLabel rect {
-    fill: #fafafa !important;
-  }
-  .nav-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-  }
-  .btn-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 7px 18px;
-    border: 1px solid #bbb;
-    border-radius: 6px;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    font-size: 12px;
-    color: #444;
-    text-decoration: none;
-    background: #f5f5f5;
-    transition: all 0.18s;
-    letter-spacing: 0.2px;
-  }
-  .btn-back:hover {
-    background: #e8e8e8;
-    border-color: #888;
-    color: #111;
-  }
-  .btn-back svg { flex-shrink: 0; }
-  .footer {
-    margin-top: 20px;
-    font-size: 11px;
-    color: #888;
-    text-align: center;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Systematic Volatility Portfolio Process</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #ffffff;
+            color: #333333;
+        }
+        .header-bar {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 1rem;
+        }
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+        .legend {
+            display: flex;
+            gap: 3rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .legend-group h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.82rem;
+            margin-bottom: 0.35rem;
+            color: #444;
+        }
+        .swatch {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 2px solid;
+            flex-shrink: 0;
+        }
+        .swatch-green  { background: #c8e6c9; border-color: #2e7d32; }
+        .swatch-yellow { background: #fff9c4; border-color: #f9a825; }
+        .swatch-red    { background: #ffcdd2; border-color: #c62828; }
+        .swatch-grey   { background: #e8e8e8; border-color: #555555; }
+        .mermaid-container {
+            overflow-x: auto;
+            margin-bottom: 2rem;
+        }
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 18px;
+            border: 1px solid #bbb;
+            border-radius: 6px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 12px;
+            color: #444;
+            text-decoration: none;
+            background: #f5f5f5;
+            transition: all 0.18s;
+            letter-spacing: 0.2px;
+        }
+        .btn-back:hover {
+            background: #e8e8e8;
+            border-color: #888;
+            color: #111;
+        }
+        .btn-back svg { flex-shrink: 0; }
+        .footer {
+            border-top: 1px solid #ddd;
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #888;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
+
 <div class="nav-bar">
   <a href="index.html" class="btn-back">
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -139,95 +111,133 @@
     Back to Dashboard
   </a>
 </div>
+
 <h1>Systematic Volatility Portfolio Process</h1>
 <p class="subtitle">48-step, 7-stage workflow &middot; 5 strategy legs &middot; Dispersion, Volatility Harvesting, Directional Long/Short, Dynamic Volatility Targeting, Option Overlays</p>
 
 <div class="legend">
-  <div class="legend-group">
-    <h3>Blocker Colors</h3>
-    <div class="legend-item"><div class="dot" style="background:#c8e6c9;border:2px solid #2e7d32;"></div> No Blocker (Green) — 34 steps</div>
-    <div class="legend-item"><div class="dot" style="background:#fff9c4;border:2px solid #f9a825;"></div> Soft Blocker (Yellow) — 10 steps</div>
-    <div class="legend-item"><div class="dot" style="background:#ffcdd2;border:2px solid #c62828;"></div> Hard Blocker (Red) — 4 steps</div>
-  </div>
-  <div class="legend-group">
-    <h3>Shapes</h3>
-    <div class="legend-item"><div class="shape-dot shape-oval" style="background:#e8e8e8;"></div> Oval — Start / End</div>
-    <div class="legend-item"><div class="shape-dot shape-rect" style="background:#c8e6c9;"></div> Rectangle — Process Step</div>
-    <div class="legend-item"><div class="shape-dot shape-diamond" style="background:#fff9c4;"></div> Diamond — Decision / Gate</div>
-    <div class="legend-item"><div class="shape-dot shape-para" style="background:#c8e6c9;"></div> Parallelogram — Output</div>
-  </div>
+    <div class="legend-group">
+        <h3>Blocker Colors</h3>
+        <div class="legend-item"><div class="swatch swatch-green"></div> No Blocker (Green) &mdash; 34 steps</div>
+        <div class="legend-item"><div class="swatch swatch-yellow"></div> Soft Blocker (Yellow) &mdash; 10 steps</div>
+        <div class="legend-item"><div class="swatch swatch-red"></div> Hard Blocker (Red) &mdash; 4 steps</div>
+    </div>
+    <div class="legend-group">
+        <h3>Shapes</h3>
+        <div class="legend-item"><div class="swatch swatch-grey"></div> Oval &mdash; Start / End</div>
+        <div class="legend-item"><div class="swatch swatch-green"></div> Rectangle &mdash; Process Step</div>
+        <div class="legend-item"><div class="swatch swatch-green"></div> Diamond &mdash; Decision / Gate</div>
+        <div class="legend-item"><div class="swatch swatch-green"></div> Parallelogram &mdash; Output</div>
+    </div>
 </div>
 
-<div class="mermaid-wrap">
-  <pre class="mermaid">
+<div class="mermaid-container">
+<pre class="mermaid">
 %%{init: {"theme": "base", "themeVariables": {"primaryColor": "#ffffff", "lineColor": "#333333", "primaryTextColor": "#333333", "primaryBorderColor": "#333333"}}}%%
 flowchart TD
   START(["START"]):::start
 
-  subgraph S1["STAGE 1: IDEA GENERATION & SOURCING"]
-    s1_1["Quant: 1.1<br/>Define dispersion trade universe"]:::none
-    s1_2["Quant: 1.2<br/>Compute realized vs implied correlation"]:::none
-    s1_3["Quant: 1.3<br/>Calculate dispersion Z-score"]:::none
-    s1_4["Quant: 1.4<br/>Classify current volatility regime"]:::soft
-    s1_5["Quant: 1.5<br/>Generate dispersion entry signals"]:::none
-    s1_6["Quant: 1.6<br/>Screen idiosyncratic volatility opportunities"]:::soft
-    s1_7["Quant: 1.7<br/>Screen volatility harvesting opportunities"]:::soft
+  subgraph S1["STAGE 1: IDEA GENERATION &amp; SOURCING"]
+    s1_1["Quant: 1.1  
+Define dispersion trade universe"]:::none
+    s1_2["Quant: 1.2  
+Compute realized vs implied correlation"]:::none
+    s1_3["Quant: 1.3  
+Calculate dispersion Z-score"]:::none
+    s1_4["Quant: 1.4  
+Classify current volatility regime"]:::soft
+    s1_5["Quant: 1.5  
+Generate dispersion entry signals"]:::none
+    s1_6["Quant: 1.6  
+Screen idiosyncratic volatility opportunities"]:::soft
+    s1_7["Quant: 1.7  
+Screen volatility harvesting opportunities"]:::soft
     s1_1 --> s1_2 --> s1_3 --> s1_4 --> s1_5 --> s1_6 --> s1_7
   end
   START --> s1_1
   s1_7 --> O1[/"Eligible Trade Universe"/]:::output
 
   subgraph S2["STAGE 2: RESEARCH AGGREGATION"]
-    s2_1["Quant: 2.1<br/>Calibrate stochastic volatility model"]:::none
-    s2_2["Quant: 2.2<br/>Estimate cross-asset correlation matrix"]:::none
-    s2_3["Quant: 2.3<br/>Build comprehensive Greeks engine"]:::none
-    s2_4["Quant: 2.4<br/>Backtest dispersion strategy"]:::none
-    s2_5["Analyst: 2.5<br/>Aggregate sell-side research"]:::soft
-    s2_6["Quant: 2.6<br/>Backtest volatility harvesting & directional strategies"]:::none
+    s2_1["Quant: 2.1  
+Calibrate stochastic volatility model"]:::none
+    s2_2["Quant: 2.2  
+Estimate cross-asset correlation matrix"]:::none
+    s2_3["Quant: 2.3  
+Build comprehensive Greeks engine"]:::none
+    s2_4["Quant: 2.4  
+Backtest dispersion strategy"]:::none
+    s2_5["Analyst: 2.5  
+Aggregate sell-side research"]:::soft
+    s2_6["Quant: 2.6  
+Backtest volatility harvesting &amp; directional strategies"]:::none
     s2_1 --> s2_2 --> s2_3 --> s2_4 --> s2_5 --> s2_6
   end
   O1 --> s2_1
-  s2_6 --> O2[/"Calibrated Models & Backtest"/]:::output
+  s2_6 --> O2[/"Calibrated Models &amp; Backtest"/]:::output
 
-  subgraph S3["STAGE 3: COLLABORATION & PEER REVIEW"]
-    s3_1["Portfolio Manager: 3.1<br/>Review dispersion signal quality"]:::none
-    GATE1{"Portfolio Manager: 3.1<br/>Signal Quality Gate"}:::none
-    s3_2["Risk Manager: 3.2<br/>Stress-test correlation matrix"]:::none
-    s3_3["Portfolio Manager: 3.3<br/>Evaluate volatility harvesting overlay"]:::none
-    s3_4["Portfolio Manager & Risk Manager: 3.4<br/>Formulate directional volatility views"]:::none
-    s3_5["Portfolio Manager: 3.5<br/>Assess counterparty risk & ISDA documentation"]:::soft
+  subgraph S3["STAGE 3: COLLABORATION &amp; PEER REVIEW"]
+    s3_1["Portfolio Manager: 3.1  
+Review dispersion signal quality"]:::none
+    GATE1{"Portfolio Manager: 3.1  
+Signal Quality Gate"}:::none
+    s3_2["Risk Manager: 3.2  
+Stress-test correlation matrix"]:::none
+    s3_3["Portfolio Manager: 3.3  
+Evaluate volatility harvesting overlay"]:::none
+    s3_4["Portfolio Manager &amp; Risk Manager: 3.4  
+Formulate directional volatility views"]:::none
+    s3_5["Portfolio Manager: 3.5  
+Assess counterparty risk &amp; ISDA documentation"]:::soft
     s3_1 --> GATE1
     GATE1 -- Approve --> s3_2 --> s3_3 --> s3_4 --> s3_5
   end
   O2 --> s3_1
   GATE1 -. "Reject" .-> s1_4
-  s3_5 --> O3[/"Stress Tests & Peer Review"/]:::output
+  s3_5 --> O3[/"Stress Tests &amp; Peer Review"/]:::soft
 
   subgraph S4["STAGE 4: THESIS DEVELOPMENT"]
-    s4_1["Portfolio Manager: 4.1<br/>Draft investment thesis memo"]:::none
-    s4_2["Quant: 4.2<br/>Design index short volatility leg"]:::none
-    s4_3["Quant: 4.3<br/>Design constituent long volatility leg"]:::none
-    s4_4["Quant: 4.4<br/>Design volatility harvesting positions"]:::none
-    s4_5["Quant: 4.5<br/>Design directional volatility positions"]:::none
-    s4_6["Quant: 4.6<br/>Verify portfolio Greeks & constraints"]:::none
-    s4_7["Quant: 4.7<br/>Specify volatility-targeting framework"]:::none
-    s4_8["Quant: 4.8<br/>Design tail-risk hedging & collar overlay"]:::none
-    s4_9["Risk Manager: 4.9<br/>Run full scenario analysis"]:::none
-    s4_10["Quant: 4.10<br/>Design attribution methodology"]:::none
-    s4_11["Portfolio Manager: 4.11<br/>Finalize Investment Committee memorandum"]:::none
+    s4_1["Portfolio Manager: 4.1  
+Draft investment thesis memo"]:::none
+    s4_2["Quant: 4.2  
+Design index short volatility leg"]:::none
+    s4_3["Quant: 4.3  
+Design constituent long volatility leg"]:::none
+    s4_4["Quant: 4.4  
+Design volatility harvesting positions"]:::none
+    s4_5["Quant: 4.5  
+Design directional volatility positions"]:::none
+    s4_6["Quant: 4.6  
+Verify portfolio Greeks &amp; constraints"]:::none
+    s4_7["Quant: 4.7  
+Specify volatility-targeting framework"]:::none
+    s4_8["Quant: 4.8  
+Design tail-risk hedging &amp; collar overlay"]:::none
+    s4_9["Risk Manager: 4.9  
+Run full scenario analysis"]:::none
+    s4_10["Quant: 4.10  
+Design attribution methodology"]:::none
+    s4_11["Portfolio Manager: 4.11  
+Finalize Investment Committee memorandum"]:::none
     s4_1 --> s4_2 --> s4_3 --> s4_4 --> s4_5 --> s4_6 --> s4_7 --> s4_8 --> s4_9 --> s4_10 --> s4_11
   end
   O3 --> s4_1
   s4_11 --> O4[/"Investment Committee Memorandum"/]:::output
 
-  subgraph S5["STAGE 5: DECISION, APPROVAL, & PORTFOLIO CONSTRUCTION"]
-    s5_1["Portfolio Manager: 5.1<br/>Present portfolio proposal to Investment Committee"]:::none
-    GATE2{"Investment Committee: 5.2<br/>Approval Vote?"}:::hard
-    s5_3["Compliance: 5.3<br/>Clear compliance requirements"]:::soft
-    s5_4["Quant: 5.4<br/>Generate execution schedule"]:::none
-    s5_5["Trader: 5.5<br/>Execute index option legs"]:::hard
-    s5_6["Trader: 5.6<br/>Execute constituent & Over-the-Counter legs"]:::hard
-    s5_7["Operations: 5.7<br/>Reconcile trades & confirm margin"]:::soft
+  subgraph S5["STAGE 5: DECISION, APPROVAL, &amp; PORTFOLIO CONSTRUCTION"]
+    s5_1["Portfolio Manager: 5.1  
+Present portfolio proposal to Investment Committee"]:::none
+    GATE2{"Investment Committee: 5.2  
+Approval Vote?"}:::hard
+    s5_3["Compliance: 5.3  
+Clear compliance requirements"]:::soft
+    s5_4["Quant: 5.4  
+Generate execution schedule"]:::none
+    s5_5["Trader: 5.5  
+Execute index option legs"]:::hard
+    s5_6["Trader: 5.6  
+Execute constituent &amp; Over-the-Counter legs"]:::hard
+    s5_7["Operations: 5.7  
+Reconcile trades &amp; confirm margin"]:::soft
     s5_1 --> GATE2
     GATE2 -- Approved --> s5_3 --> s5_4 --> s5_5 --> s5_6 --> s5_7
   end
@@ -236,36 +246,49 @@ flowchart TD
   GATE2 -. "Conditional" .-> s4_1
   s5_7 --> O5[/"Live Portfolio"/]:::output
 
-  subgraph S6["STAGE 6: MONITORING & REVIEW"]
-    s6_1["Risk Manager: 6.1<br/>Monitor portfolio Greeks daily"]:::soft
-    s6_2["Quant: 6.2<br/>Track multi-strategy Profit & Loss attribution"]:::soft
-    s6_3["Quant: 6.3<br/>Update regime classification"]:::soft
-    GATE3{"Portfolio Manager: 6.4<br/>Thesis Drift?"}:::none
-    s6_5["Risk Manager: 6.5<br/>Run weekly tail-risk diagnostic"]:::none
-    s6_6["Portfolio Manager: 6.6<br/>Manage constituent earnings events"]:::none
+  subgraph S6["STAGE 6: MONITORING &amp; REVIEW"]
+    s6_1["Risk Manager: 6.1  
+Monitor portfolio Greeks daily"]:::soft
+    s6_2["Quant: 6.2  
+Track multi-strategy Profit &amp; Loss attribution"]:::soft
+    s6_3["Quant: 6.3  
+Update regime classification"]:::soft
+    GATE3{"Portfolio Manager: 6.4  
+Thesis Drift?"}:::none
+    s6_5["Risk Manager: 6.5  
+Run weekly tail-risk diagnostic"]:::none
+    s6_6["Portfolio Manager: 6.6  
+Manage constituent earnings events"]:::none
     s6_1 --> s6_2 --> s6_3 --> GATE3
     GATE3 -- Maintain --> s6_5 --> s6_6
   end
   O5 --> s6_1
   GATE3 -. "Adjust" .-> s4_1
   GATE3 -. "Unwind" .-> s1_1
-  s6_3 -. "Strategic: Regime Shift" .-> s1_5
-  s6_6 --> O6[/"Daily Risk Reports & Attribution"/]:::output
+  s6_3 -. "Strategic: Regime Shift" .-> s1_4
+  s6_6 --> O6[/"Daily Risk Reports &amp; Attribution"/]:::output
 
-  subgraph S7["STAGE 7: REBALANCING & LIQUIDITY"]
-    s7_1["Quant: 7.1<br/>Compute optimal rebalancing trades"]:::none
-    s7_2["Quant: 7.2<br/>Adjust volatility-target leverage"]:::none
-    s7_3["Portfolio Manager: 7.3<br/>Approve rebalancing package"]:::none
-    s7_4["Trader: 7.4<br/>Execute rebalancing trades"]:::hard
-    s7_5["Quant: 7.5<br/>Verify post-rebalance portfolio"]:::none
-    s7_6["Portfolio Manager: 7.6<br/>Prepare monthly investor report"]:::none
+  subgraph S7["STAGE 7: REBALANCING &amp; LIQUIDITY"]
+    s7_1["Quant: 7.1  
+Compute optimal rebalancing trades"]:::none
+    s7_2["Quant: 7.2  
+Adjust volatility-target leverage"]:::none
+    s7_3["Portfolio Manager: 7.3  
+Approve rebalancing package"]:::none
+    s7_4["Trader: 7.4  
+Execute rebalancing trades"]:::hard
+    s7_5["Quant: 7.5  
+Verify post-rebalance portfolio"]:::none
+    s7_6["Portfolio Manager: 7.6  
+Prepare monthly investor report"]:::none
     s7_1 --> s7_2 --> s7_3 --> s7_4 --> s7_5 --> s7_6
   end
   O6 --> s7_1
   s7_4 -. "Tactical: Back to Monitoring" .-> s6_1
-  s7_6 --> O7[/"Rebalance Package & Investor Report"/]:::output
+  s7_6 --> O7[/"Rebalance Package &amp; Investor Report"/]:::output
 
-  O7 --> DEC{"Action<br/>Decision"}:::none
+  O7 --> DEC{"Action  
+Decision"}:::none
   DEC -- Hold --> s6_1
   DEC -- Rebalance --> s7_1
   DEC -. "Fundamental: Full Rebuild" .-> s1_1
@@ -276,21 +299,17 @@ flowchart TD
   classDef hard fill:#ffcdd2,stroke:#c62828,stroke-width:2px,color:#b71c1c
   classDef output fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
   classDef start fill:#e8e8e8,stroke:#555555,stroke-width:2px,color:#333333
-  </pre>
+</pre>
 </div>
 
 <div class="footer">
-  Systematic Volatility Portfolio Process &middot; Cross-Asset Trading Strat / Systematic Quant &middot; Workflow Process Map
+    Systematic Volatility Portfolio Process &middot; Cross-Asset Trading Strategist / Systematic Quant &middot; Workflow Process Map
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
-<script>
-mermaid.initialize({
-  startOnLoad: true,
-  theme: 'base',
-  securityLevel: 'loose',
-  flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis', padding: 18, nodeSpacing: 30, rankSpacing: 40, wrappingWidth: 200 }
-});
+<script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true, securityLevel: 'loose', flowchart: { useMaxWidth: true, htmlLabels: true } });
 </script>
+
 </body>
 </html>
