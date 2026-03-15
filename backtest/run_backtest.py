@@ -54,6 +54,14 @@ def main():
         help="Rebalance strategies every N days (default: 5 = weekly)",
     )
     parser.add_argument(
+        "--mtm", action="store_true",
+        help="Use mark-to-market mode (Black-Scholes repricing + delta hedging)",
+    )
+    parser.add_argument(
+        "--hedge-cost-bps", type=float, default=3.0,
+        help="Transaction cost per delta-hedge trade in basis points (default: 3.0)",
+    )
+    parser.add_argument(
         "--no-plot", action="store_true",
         help="Skip chart generation",
     )
@@ -83,12 +91,15 @@ def main():
     # ------------------------------------------------------------------
     # 2. Run backtest
     # ------------------------------------------------------------------
+    pnl_mode = "mtm" if args.mtm else "greeks"
     engine = BacktestEngine(
+        pnl_mode=pnl_mode,
         rebalance_days=args.rebalance_days,
+        hedge_txn_cost_bps=args.hedge_cost_bps,
         suppress_prints=True,
     )
 
-    logger.info("Running backtest (rebalance every %d days)...", args.rebalance_days)
+    logger.info("Running backtest [%s] (rebalance every %d days)...", pnl_mode, args.rebalance_days)
     results = engine.run(data)
 
     # ------------------------------------------------------------------

@@ -115,6 +115,19 @@ class PortfolioPricer:
         self.prev_mtm = 0.0
         self.total_mtm = 0.0
 
+    def initialize_mtm(self):
+        """
+        Set prev_mtm to current portfolio value so the first reprice
+        doesn't produce an artificial PnL jump from zero.
+        Call this after adding all positions and before the first reprice.
+        """
+        total = 0.0
+        for pos in self.positions:
+            contract_mult = abs(pos.notional / max(pos.entry_price, 1e-6))
+            total += pos.quantity * pos.current_price * contract_mult
+        self.prev_mtm = total
+        self.total_mtm = total
+
     # ------------------------------------------------------------------
     # Position builders
     # ------------------------------------------------------------------
@@ -336,8 +349,12 @@ def positions_from_strategy(
     """
     Convert a strategy's position list into priced OptionPositions.
 
-    Maps the simplified position dicts from strategies into actual
-    option contracts that can be marked to market.
+    IMPORTANT: Sizes option positions to match the strategy's intended
+    dollar vega, not the raw notional. This ensures the pricer's BS-computed
+    Greeks align with the strategy's risk budget.
+
+    The mapping is: target_vega / bs_vega_per_contract = num_contracts
+    Then notional_for_pricer = num_contracts * option_price * multiplier
 
     Args:
         strategy_name: Name of the strategy.
@@ -349,70 +366,99 @@ def positions_from_strategy(
     for pos in positions:
         leg = pos.get("leg", "UNKNOWN")
         direction = pos.get("direction", "LONG")
-        notional = abs(pos.get("notional_usd", 0))
+        target_vega = abs(pos.get("vega_usd", 0))
         quantity = 1.0 if direction == "LONG" else -1.0
+
+        # Skip positions with no vega exposure
+        if target_vega < 1.0:
+            continue
 
         # Determine strike from instrument description
         instrument = pos.get("instrument", "")
         if "at-the-money" in instrument.lower() or "atm" in instrument.lower():
             strike = spot
         elif "5% out-of-the-money" in instrument.lower():
-            strike = spot * 0.95  # OTM put
+            strike = spot * 0.95
         elif "10% out-of-the-money" in instrument.lower():
             strike = spot * 0.90
         else:
-            strike = spot  # default ATM
+            strike = spot
 
-        # Determine if straddle or single leg
-        if "straddle" in instrument.lower():
+        tenor_years = 0.25  # 3-month default
+
+        # Compute BS vega per contract to determine sizing
+        bs_vega_single = bs.vega(spot, strike, atm_vol, tenor_years)
+        if bs_vega_single < 1e-6:
+            continue
+
+        # For straddles, vega is call_vega + put_vega (both positive)
+        is_straddle = "straddle" in instrument.lower()
+        if is_straddle:
+            vega_per_unit = bs_vega_single * 2  # call + put
+        else:
+            vega_per_unit = bs_vega_single
+
+        # Scale notional so BS Greeks match strategy's target vega
+        # num_units = target_vega / vega_per_unit
+        # notional = num_units * option_price
+        num_units = target_vega / vega_per_unit
+        option_price = bs.price(spot, strike, atm_vol, tenor_years, 0.045, True)
+        if is_straddle:
+            put_price = bs.price(spot, strike, atm_vol, tenor_years, 0.045, False)
+            option_price = option_price + put_price
+        scaled_notional = num_units * option_price
+
+        if is_straddle:
             pricer.add_straddle(
                 strategy=strategy_name,
                 leg_id=leg,
                 underlying="SPX_INDEX" if "index" in leg.lower() or "SPX" in instrument else "CONSTITUENT",
                 strike=strike,
-                tenor_years=0.25,  # 3-month default
+                tenor_years=tenor_years,
                 quantity=quantity,
-                notional=notional,
+                notional=scaled_notional,
                 spot=spot,
                 vol=atm_vol,
             )
         elif "put" in instrument.lower():
+            vol = atm_vol * 1.05  # puts trade at slight premium
             pricer.add_option(
                 strategy=strategy_name,
                 leg_id=leg,
                 underlying="SPX_INDEX",
                 strike=strike,
-                tenor_years=0.25,
+                tenor_years=tenor_years,
                 is_call=False,
                 quantity=quantity,
-                notional=notional,
+                notional=scaled_notional,
                 spot=spot,
-                vol=atm_vol * 1.05,  # puts trade at slight premium
+                vol=vol,
             )
         elif "call" in instrument.lower():
+            vol = atm_vol * 0.97
             pricer.add_option(
                 strategy=strategy_name,
                 leg_id=leg,
                 underlying="SPX_INDEX",
                 strike=strike,
-                tenor_years=0.25,
+                tenor_years=tenor_years,
                 is_call=True,
                 quantity=quantity,
-                notional=notional,
+                notional=scaled_notional,
                 spot=spot,
-                vol=atm_vol * 0.97,  # calls trade at slight discount
+                vol=vol,
             )
         elif "variance" in instrument.lower() or "swap" in instrument.lower():
-            # Approximate variance swap as a strip: short OTM puts + calls
+            half_notional = scaled_notional / 2
             pricer.add_option(
                 strategy=strategy_name,
                 leg_id=f"{leg}_PUT",
                 underlying="SPX_INDEX",
                 strike=spot * 0.95,
-                tenor_years=0.25,
+                tenor_years=tenor_years,
                 is_call=False,
                 quantity=quantity,
-                notional=notional / 2,
+                notional=half_notional,
                 spot=spot,
                 vol=atm_vol * 1.08,
             )
@@ -421,23 +467,22 @@ def positions_from_strategy(
                 leg_id=f"{leg}_CALL",
                 underlying="SPX_INDEX",
                 strike=spot * 1.05,
-                tenor_years=0.25,
+                tenor_years=tenor_years,
                 is_call=True,
                 quantity=quantity,
-                notional=notional / 2,
+                notional=half_notional,
                 spot=spot,
                 vol=atm_vol * 0.95,
             )
         else:
-            # Default: ATM straddle
             pricer.add_straddle(
                 strategy=strategy_name,
                 leg_id=leg,
                 underlying="SPX_INDEX",
                 strike=strike,
-                tenor_years=0.25,
+                tenor_years=tenor_years,
                 quantity=quantity,
-                notional=notional,
+                notional=scaled_notional,
                 spot=spot,
                 vol=atm_vol,
             )

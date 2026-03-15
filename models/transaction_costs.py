@@ -225,10 +225,10 @@ class TransactionCostModel:
                 **cost,
             })
 
+        total_notional = sum(abs(p.get("notional_usd", 0)) for p in positions)
         return {
             "total_cost": total_cost,
-            "total_bps_of_notional": (total_cost / sum(abs(p.get("notional_usd", 0)) for p in positions) * 10000)
-            if positions else 0,
+            "total_bps_of_notional": (total_cost / total_notional * 10000) if total_notional > 0 else 0,
             "positions": position_costs,
         }
 
