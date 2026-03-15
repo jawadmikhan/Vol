@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backtest Results | Systematic Volatility Portfolio</title>
+    <meta name="description" content="Walk-forward backtest results for $250M Systematic Volatility Portfolio — Greeks-based PnL attribution, regime analysis, strategy contribution">
+    <style>
+        /* ================================================================
+           DESIGN SYSTEM — Matches jawadmikhan.github.io/Vol
+           ================================================================ */
+        :root {
+            --bg-body: #0d1117;
+            --bg-section: #1a2332;
+            --bg-card: #1a2e4a;
+            --bg-card-hover: #1f3556;
+            --bg-input: #101824;
+            --border: #2a3e5c;
+            --border-accent: #4a7aaa;
+            --text-primary: #e2e8f0;
+            --text-secondary: #8899aa;
+            --text-dim: #5a6a7a;
+            --teal: #3ecfb4;
+            --teal-dim: rgba(62, 207, 180, 0.12);
+            --teal-glow: rgba(62, 207, 180, 0.25);
+            --gold: #d8a843;
+            --gold-dim: rgba(216, 168, 67, 0.12);
+            --red: #e06060;
+            --red-dim: rgba(224, 96, 96, 0.12);
+            --green: #48b884;
+            --green-dim: rgba(72, 184, 132, 0.12);
+            --blue: #4a7aaa;
+            --purple: #9b7ad8;
+            --purple-dim: rgba(155, 122, 216, 0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            line-height: 1.65;
+            font-size: 15px;
+        }
+
+        a { color: var(--teal); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* -- Top Bar -- */
+        .topbar {
+            background: var(--bg-section);
+            border-bottom: 1px solid var(--border);
+            padding: 0.6rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-brand {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.03em;
+        }
+
+        .topbar-brand strong { color: var(--teal); font-weight: 600; }
+
+        .topbar-nav { display: flex; gap: 1.5rem; }
+
+        .topbar-nav a {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+
+        .topbar-nav a:hover { color: var(--teal); text-decoration: none; }
+        .topbar-nav a.active { color: var(--teal); font-weight: 600; }
+
+        /* -- Hero -- */
+        .hero {
+            padding: 3.5rem 2rem 2.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero-eyebrow {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-eyebrow strong { color: var(--teal); }
+
+        .hero h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+        }
+
+        .hero-desc {
+            color: var(--text-secondary);
+            max-width: 750px;
+            font-size: 0.92rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-links { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1.1rem;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-primary { background: var(--teal); color: var(--bg-body); }
+        .btn-primary:hover { opacity: 0.85; text-decoration: none; }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover { border-color: var(--border-accent); text-decoration: none; }
+
+        /* -- Stats Bar -- */
+        .stats-bar {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 2rem 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .stat-item {
+            background: var(--bg-section);
+            padding: 1.1rem 0.75rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--teal);
+            line-height: 1.2;
+        }
+
+        .stat-value.red { color: var(--red); }
+        .stat-value.green { color: var(--green); }
+        .stat-value.gold { color: var(--gold); }
+
+        .stat-label {
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            margin-top: 0.2rem;
+            letter-spacing: 0.02em;
+        }
+
+        /* -- Section -- */
+        .section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .section + .section { padding-top: 0; }
+
+        .section-header { margin-bottom: 1.5rem; }
+
+        .section-badge {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-teal { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(62,207,180,0.2); }
+        .badge-gold { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(216,168,67,0.2); }
+        .badge-red  { background: var(--red-dim);  color: var(--red);  border: 1px solid rgba(224,96,96,0.2); }
+        .badge-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(72,184,132,0.2); }
+        .badge-purple { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(155,122,216,0.2); }
+
+        .section h2 {
+            font-size: 1.45rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        .section-desc {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            max-width: 700px;
+        }
+
+        .divider {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* -- Tables -- */
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        thead th {
+            background: var(--bg-card);
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            color: var(--text-secondary);
+            text-align: left;
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        thead th.right { text-align: right; }
+
+        tbody td {
+            padding: 0.65rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+            vertical-align: top;
+        }
+
+        tbody td.right { text-align: right; }
+
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: rgba(26, 46, 74, 0.3); }
+        tbody tr.total-row td { border-top: 2px solid var(--border-accent); font-weight: 600; color: var(--text-primary); }
+
+        .mono {
+            font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+            font-size: 0.8rem;
+        }
+
+        .val { color: var(--text-primary); font-weight: 500; }
+        .teal-text { color: var(--teal); }
+        .gold-text { color: var(--gold); }
+        .red-text { color: var(--red); }
+        .green-text { color: var(--green); }
+        .purple-text { color: var(--purple); }
+
+        /* -- Metric Cards Grid -- */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-cell {
+            background: var(--bg-section);
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .metric-name {
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            letter-spacing: 0.05em;
+            margin-bottom: 0.3rem;
+        }
+
+        .metric-val {
+            font-size: 1.15rem;
+            font-weight: 700;
+            font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+        }
+
+        /* -- Chart Containers -- */
+        .chart-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-title {
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 280px;
+        }
+
+        /* -- Regime Bar -- */
+        .regime-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .regime-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.4rem;
+        }
+
+        .regime-card.low-vol { border-left: 3px solid var(--green); }
+        .regime-card.transitional { border-left: 3px solid var(--gold); }
+        .regime-card.crisis { border-left: 3px solid var(--red); }
+
+        .regime-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            margin-bottom: 0.6rem;
+        }
+
+        .regime-stat {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            padding: 0.25rem 0;
+            border-bottom: 1px solid rgba(42,62,92,0.5);
+        }
+
+        .regime-stat:last-child { border-bottom: none; }
+
+        .regime-stat .label { color: var(--text-dim); }
+        .regime-stat .value { color: var(--text-primary); font-weight: 500; font-family: 'SF Mono', Consolas, monospace; }
+
+        /* -- Monthly Returns Heatmap -- */
+        .heatmap-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .heatmap-wrap table { text-align: center; }
+        .heatmap-wrap thead th { text-align: center; }
+        .heatmap-wrap tbody td { text-align: center; font-family: 'SF Mono', Consolas, monospace; font-size: 0.78rem; }
+
+        .hm-positive { background: rgba(72, 184, 132, 0.15); color: var(--green); }
+        .hm-strong-positive { background: rgba(72, 184, 132, 0.3); color: var(--green); font-weight: 600; }
+        .hm-negative { background: rgba(224, 96, 96, 0.15); color: var(--red); }
+        .hm-strong-negative { background: rgba(224, 96, 96, 0.3); color: var(--red); font-weight: 600; }
+        .hm-neutral { color: var(--text-dim); }
+        .hm-total { background: var(--bg-card); font-weight: 700; }
+
+        /* -- Footer -- */
+        .footer {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            border-top: 1px solid var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .regime-grid { grid-template-columns: 1fr; }
+            .stats-bar { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── TOP BAR ── -->
+<nav class="topbar">
+    <div class="topbar-brand"><strong>VOL</strong> &middot; Systematic Volatility Portfolio</div>
+    <div class="topbar-nav">
+        <a href="index.html">Workflow</a>
+        <a href="portfolio.html">Portfolio</a>
+        <a href="backtest.html" class="active">Backtest</a>
+        <a href="workflow.html">Process Map</a>
+    </div>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+    <div class="hero-eyebrow"><strong>BACKTEST</strong> Walk-Forward Simulation</div>
+    <h1>Backtest Results</h1>
+    <p class="hero-desc">
+        Greeks-based walk-forward backtest over 504 trading days of synthetic regime data.
+        Weekly rebalancing, 5 sub-strategies, $250M capital base. PnL decomposed via
+        vega, gamma, theta, and correlation attribution.
+    </p>
+    <div class="hero-links">
+        <a href="portfolio.html" class="btn btn-secondary">Portfolio</a>
+        <a href="index.html" class="btn btn-secondary">Workflow</a>
+        <a href="https://github.com/jawadmikhan/Vol" class="btn btn-secondary" target="_blank">GitHub</a>
+    </div>
+</div>
+
+<!-- ── KEY METRICS BAR ── -->
+<div class="stats-bar">
+    <div class="stat-item">
+        <div class="stat-value green">$35.5M</div>
+        <div class="stat-label">TOTAL PNL</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value">14.2%</div>
+        <div class="stat-label">TOTAL RETURN</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value">4.20</div>
+        <div class="stat-label">SHARPE RATIO</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value">9.94</div>
+        <div class="stat-label">SORTINO RATIO</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value red">0.99%</div>
+        <div class="stat-label">MAX DRAWDOWN</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value">7.15</div>
+        <div class="stat-label">CALMAR RATIO</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value">3.55</div>
+        <div class="stat-label">PROFIT FACTOR</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value">504</div>
+        <div class="stat-label">TRADING DAYS</div>
+    </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION: Return & Risk Summary -->
+<!-- ================================================================ -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-badge badge-teal">PERFORMANCE SUMMARY</div>
+        <h2>Returns and Risk</h2>
+        <p class="section-desc">Key performance metrics from the walk-forward backtest on synthetic data spanning Jan 2024 to Dec 2025.</p>
+    </div>
+
+    <div class="metrics-grid">
+        <div class="metric-cell">
+            <div class="metric-name">ANNUALIZED RETURN</div>
+            <div class="metric-val green-text">7.10%</div>
+        </div>
+        <div class="metric-cell">
+            <div class="metric-name">AVG DAILY PNL</div>
+            <div class="metric-val teal-text">$70,473</div>
+        </div>
+        <div class="metric-cell">
+            <div class="metric-name">WIN RATE</div>
+            <div class="metric-val">50.4%</div>
+        </div>
+        <div class="metric-cell">
+            <div class="metric-name">WIN / LOSS DAYS</div>
+            <div class="metric-val">254 / 250</div>
+        </div>
+        <div class="metric-cell">
+            <div class="metric-name">AVG WIN</div>
+            <div class="metric-val green-text">$194,767</div>
+        </div>
+        <div class="metric-cell">
+            <div class="metric-name">AVG LOSS</div>
+            <div class="metric-val red-text">-$55,809</div>
+        </div>
+        <div class="metric-cell">
+            <div class="metric-name">BEST DAY</div>
+            <div class="metric-val green-text">$1,062,443</div>
+        </div>
+        <div class="metric-cell">
+            <div class="metric-name">WORST DAY</div>
+            <div class="metric-val red-text">-$727,859</div>
+        </div>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ================================================================ -->
+<!-- SECTION: Cumulative PnL Chart -->
+<!-- ================================================================ -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-badge badge-green">EQUITY CURVE</div>
+        <h2>Cumulative PnL</h2>
+        <p class="section-desc">Portfolio-level cumulative profit and loss with regime shading. Red bands indicate CRISIS regime periods.</p>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="cumulativePnlChart" class="chart-canvas" style="height: 350px;"></canvas>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ================================================================ -->
+<!-- SECTION: PnL Attribution by Greek -->
+<!-- ================================================================ -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-badge badge-purple">ATTRIBUTION</div>
+        <h2>PnL Attribution by Greek</h2>
+        <p class="section-desc">Decomposition of total PnL into its component risk factors.</p>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>COMPONENT</th>
+                    <th class="right">TOTAL PNL</th>
+                    <th class="right">% OF TOTAL</th>
+                    <th class="right">AVG DAILY</th>
+                    <th class="right">DAILY STD</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="val">Vega</td>
+                    <td class="right mono green-text">$34,598,443</td>
+                    <td class="right mono">97.4%</td>
+                    <td class="right mono">$68,648</td>
+                    <td class="right mono">$263,148</td>
+                </tr>
+                <tr>
+                    <td class="val">Gamma</td>
+                    <td class="right mono green-text">$1,838,271</td>
+                    <td class="right mono">5.2%</td>
+                    <td class="right mono">$3,647</td>
+                    <td class="right mono">$20,690</td>
+                </tr>
+                <tr>
+                    <td class="val">Theta</td>
+                    <td class="right mono red-text">-$892,277</td>
+                    <td class="right mono">-2.5%</td>
+                    <td class="right mono">-$1,770</td>
+                    <td class="right mono">$877</td>
+                </tr>
+                <tr>
+                    <td class="val">Correlation</td>
+                    <td class="right mono red-text">-$26,068</td>
+                    <td class="right mono">-0.1%</td>
+                    <td class="right mono">-$52</td>
+                    <td class="right mono">$8,061</td>
+                </tr>
+                <tr class="total-row">
+                    <td>TOTAL</td>
+                    <td class="right mono teal-text">$35,518,370</td>
+                    <td class="right mono">100%</td>
+                    <td class="right mono">$70,473</td>
+                    <td class="right mono">$266,282</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ================================================================ -->
+<!-- SECTION: Regime Performance -->
+<!-- ================================================================ -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-badge badge-gold">REGIME ANALYSIS</div>
+        <h2>Performance by Volatility Regime</h2>
+        <p class="section-desc">How the portfolio performs across different market regimes. The regime classifier uses VIX level, term structure slope, VVIX, and realized-vs-implied spread.</p>
+    </div>
+
+    <div class="regime-grid">
+        <div class="regime-card low-vol">
+            <div class="regime-label green-text">LOW VOL HARVESTING</div>
+            <div class="regime-stat">
+                <span class="label">Days</span>
+                <span class="value">86 (17.1%)</span>
+            </div>
+            <div class="regime-stat">
+                <span class="label">Total PnL</span>
+                <span class="value red-text">-$1,728,279</span>
+            </div>
+            <div class="regime-stat">
+                <span class="label">Avg Daily</span>
+                <span class="value red-text">-$20,096</span>
+            </div>
+            <div class="regime-stat">
+                <span class="label">Sharpe</span>
+                <span class="value red-text">-3.03</span>
+            </div>
+            <div class="regime-stat">
+                <span class="label">Win Rate</span>
+                <span class="value">44.2%</span>
+            </div>
+        </div>
+
+        <div class="regime-card transitional">
+            <div class="regime-label gold-text">TRANSITIONAL</div>
+            <div class="regime-stat">
+                <span class="label">Days</span>
+                <span class="value">205 (40.7%)</span>
+            </div>
+            <div class="regime-stat">
+                <span class="label">Total PnL</span>
+                <span class="value green-text">$1,170,060</span>
+            </div>
+            <div class="regime-stat">
+                <span class="label">Avg Daily</span>
+                <span class="value green-text">$5,708</span>
+            </div>
+            <div class="regime-stat">
+                <span class="label">Sharpe</span>
+                <span class="value">0.50</span>
+            </div>
+            <div class="regime-stat">
+                <span class="label">Win Rate</span>
+                <span class="value">50.7%</span>
+            </div>
+        </div>
+
+        <div class="regime-card crisis">
+            <div class="regime-label red-text">CRISIS</div>
+            <div class="regime-stat">
+                <span class="label">Days</span>
+                <span class="value">213 (42.3%)</span>
+            </div>
+            <div class="regime-stat">
+                <span class="label">Total PnL</span>
+                <span class="value green-text">$36,076,589</span>
+            </div>
+            <div class="regime-stat">
+                <span class="label">Avg Daily</span>
+                <span class="value green-text">$169,374</span>
+            </div>
+            <div class="regime-stat">
+                <span class="label">Sharpe</span>
+                <span class="value green-text">7.94</span>
+            </div>
+            <div class="regime-stat">
+                <span class="label">Win Rate</span>
+                <span class="value">52.6%</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ================================================================ -->
+<!-- SECTION: Strategy Contribution -->
+<!-- ================================================================ -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-badge badge-teal">STRATEGY BREAKDOWN</div>
+        <h2>Strategy Contribution</h2>
+        <p class="section-desc">PnL contribution and risk-adjusted performance for each of the 5 sub-strategies.</p>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>STRATEGY</th>
+                    <th class="right">TOTAL PNL</th>
+                    <th class="right">CONTRIBUTION</th>
+                    <th class="right">SHARPE</th>
+                    <th class="right">CAPITAL</th>
+                    <th class="right">RETURN ON CAPITAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="val">Option Overlay</td>
+                    <td class="right mono green-text">$27,932,659</td>
+                    <td class="right mono">78.6%</td>
+                    <td class="right mono green-text">4.94</td>
+                    <td class="right mono">$25M</td>
+                    <td class="right mono green-text">111.7%</td>
+                </tr>
+                <tr>
+                    <td class="val">Directional Long/Short</td>
+                    <td class="right mono green-text">$9,011,660</td>
+                    <td class="right mono">25.4%</td>
+                    <td class="right mono green-text">4.39</td>
+                    <td class="right mono">$37.5M</td>
+                    <td class="right mono green-text">24.0%</td>
+                </tr>
+                <tr>
+                    <td class="val">Dispersion Trading</td>
+                    <td class="right mono red-text">-$26,068</td>
+                    <td class="right mono">-0.1%</td>
+                    <td class="right mono red-text">-0.10</td>
+                    <td class="right mono">$100M</td>
+                    <td class="right mono red-text">-0.0%</td>
+                </tr>
+                <tr>
+                    <td class="val">Dynamic Vol Targeting</td>
+                    <td class="right mono red-text">-$160,076</td>
+                    <td class="right mono">-0.5%</td>
+                    <td class="right mono red-text">-2.63</td>
+                    <td class="right mono">$37.5M</td>
+                    <td class="right mono red-text">-0.4%</td>
+                </tr>
+                <tr>
+                    <td class="val">Volatility Harvesting</td>
+                    <td class="right mono red-text">-$1,239,805</td>
+                    <td class="right mono">-3.5%</td>
+                    <td class="right mono red-text">-0.31</td>
+                    <td class="right mono">$50M</td>
+                    <td class="right mono red-text">-2.5%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Strategy contribution bar chart -->
+    <div class="chart-container" style="margin-top: 1rem;">
+        <canvas id="strategyChart" class="chart-canvas" style="height: 250px;"></canvas>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ================================================================ -->
+<!-- SECTION: Monthly Returns -->
+<!-- ================================================================ -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-badge badge-green">MONTHLY RETURNS</div>
+        <h2>Monthly Return Heatmap</h2>
+        <p class="section-desc">Monthly returns as a percentage of initial capital ($250M).</p>
+    </div>
+
+    <div class="heatmap-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>YEAR</th>
+                    <th>JAN</th><th>FEB</th><th>MAR</th><th>APR</th><th>MAY</th><th>JUN</th>
+                    <th>JUL</th><th>AUG</th><th>SEP</th><th>OCT</th><th>NOV</th><th>DEC</th>
+                    <th>TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="val">2024</td>
+                    <td class="hm-negative">-0.01</td>
+                    <td class="hm-negative">-0.10</td>
+                    <td class="hm-negative">-0.03</td>
+                    <td class="hm-negative">-0.11</td>
+                    <td class="hm-positive">0.26</td>
+                    <td class="hm-negative">-0.37</td>
+                    <td class="hm-positive">0.35</td>
+                    <td class="hm-negative">-0.03</td>
+                    <td class="hm-negative">-0.03</td>
+                    <td class="hm-strong-negative">-0.68</td>
+                    <td class="hm-positive">0.29</td>
+                    <td class="hm-negative">-0.08</td>
+                    <td class="hm-total hm-negative">-0.55</td>
+                </tr>
+                <tr>
+                    <td class="val">2025</td>
+                    <td class="hm-negative">-0.01</td>
+                    <td class="hm-positive">0.02</td>
+                    <td class="hm-strong-positive">4.90</td>
+                    <td class="hm-strong-positive">6.78</td>
+                    <td class="hm-strong-positive">3.43</td>
+                    <td class="hm-negative">-0.03</td>
+                    <td class="hm-negative">-0.06</td>
+                    <td class="hm-negative">-0.07</td>
+                    <td class="hm-negative">-0.05</td>
+                    <td class="hm-negative">-0.03</td>
+                    <td class="hm-negative">-0.06</td>
+                    <td class="hm-negative">-0.08</td>
+                    <td class="hm-total hm-strong-positive">14.75</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ================================================================ -->
+<!-- SECTION: Risk Compliance -->
+<!-- ================================================================ -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-badge badge-red">RISK COMPLIANCE</div>
+        <h2>Constraint Monitoring</h2>
+        <p class="section-desc">Investment Committee mandate compliance throughout the backtest period.</p>
+    </div>
+
+    <div class="metrics-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="metric-cell">
+            <div class="metric-name">VEGA BOUND BREACHES</div>
+            <div class="metric-val red-text">10</div>
+        </div>
+        <div class="metric-cell">
+            <div class="metric-name">NOTIONAL CAP BREACHES</div>
+            <div class="metric-val green-text">0</div>
+        </div>
+        <div class="metric-cell">
+            <div class="metric-name">MAX DRAWDOWN vs 15% LIMIT</div>
+            <div class="metric-val green-text">0.99%</div>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>CONSTRAINT</th>
+                    <th class="right">LIMIT</th>
+                    <th class="right">ACTUAL</th>
+                    <th class="right">STATUS</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="val">Net Vega Floor</td>
+                    <td class="right mono">-$2,000,000 / VIX pt</td>
+                    <td class="right mono">10 breaches</td>
+                    <td class="right"><span class="section-badge badge-gold" style="font-size: 0.65rem;">MONITOR</span></td>
+                </tr>
+                <tr>
+                    <td class="val">Net Vega Ceiling</td>
+                    <td class="right mono">+$4,000,000 / VIX pt</td>
+                    <td class="right mono">Within bounds</td>
+                    <td class="right"><span class="section-badge badge-green" style="font-size: 0.65rem;">PASS</span></td>
+                </tr>
+                <tr>
+                    <td class="val">Gross Notional Cap</td>
+                    <td class="right mono">$500,000,000</td>
+                    <td class="right mono">0 breaches</td>
+                    <td class="right"><span class="section-badge badge-green" style="font-size: 0.65rem;">PASS</span></td>
+                </tr>
+                <tr>
+                    <td class="val">Max Portfolio Drawdown</td>
+                    <td class="right mono">15%</td>
+                    <td class="right mono">0.99%</td>
+                    <td class="right"><span class="section-badge badge-green" style="font-size: 0.65rem;">PASS</span></td>
+                </tr>
+                <tr>
+                    <td class="val">Short Variance Notional</td>
+                    <td class="right mono">$80,000,000</td>
+                    <td class="right mono">Within cap</td>
+                    <td class="right"><span class="section-badge badge-green" style="font-size: 0.65rem;">PASS</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ================================================================ -->
+<!-- SECTION: Methodology -->
+<!-- ================================================================ -->
+<div class="section">
+    <div class="section-header">
+        <div class="section-badge badge-teal">METHODOLOGY</div>
+        <h2>Backtest Design</h2>
+        <p class="section-desc">How the walk-forward simulation is constructed.</p>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>PARAMETER</th>
+                    <th>VALUE</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td class="val">Data Source</td><td>Synthetic reference data (GARCH-simulated returns, mean-reverting VIX)</td></tr>
+                <tr><td class="val">Backtest Period</td><td>504 trading days (Jan 2024 - Dec 2025)</td></tr>
+                <tr><td class="val">Rebalance Frequency</td><td>Weekly (every 5 trading days)</td></tr>
+                <tr><td class="val">PnL Model</td><td>Greeks-based attribution: Vega x dVIX + 0.5 x Gamma x dRV^2 + Theta + Correlation</td></tr>
+                <tr><td class="val">IV Surface</td><td>Base surface scaled by VIX(t) / VIX(baseline=18)</td></tr>
+                <tr><td class="val">Correlation Matrix</td><td>90-day rolling pairwise from GARCH-simulated returns</td></tr>
+                <tr><td class="val">Regime Classifier</td><td>Multi-factor score: VIX level, term slope, VVIX, RV/IV spread</td></tr>
+                <tr><td class="val">Risk Limits</td><td>Vega bounds [-$2M, +$4M], $500M notional cap, 15% drawdown stop</td></tr>
+                <tr><td class="val">Transaction Costs</td><td>5 bps per rebalance (vol targeting strategy)</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="footer">
+    Systematic Volatility Portfolio &middot; Backtest on Synthetic Data &middot; For Research Purposes Only
+</div>
+
+<!-- ================================================================ -->
+<!-- CHARTS — Chart.js -->
+<!-- ================================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+// --- Cumulative PnL Data (sampled monthly from backtest results) ---
+const cumulativePnlData = {
+    labels: [
+        'Jan 24','Feb 24','Mar 24','Apr 24','May 24','Jun 24',
+        'Jul 24','Aug 24','Sep 24','Oct 24','Nov 24','Dec 24',
+        'Jan 25','Feb 25','Mar 25','Apr 25','May 25','Jun 25',
+        'Jul 25','Aug 25','Sep 25','Oct 25','Nov 25','Dec 25'
+    ],
+    cumPnl: [
+        -0.03, -0.28, -0.35, -0.63, 0.02, -0.90,
+        -0.02, -0.10, -0.18, -1.88, -1.10, -1.38,
+        -1.40, -1.35, 10.90, 27.85, 36.42, 36.35,
+        36.20, 36.03, 35.90, 35.82, 35.68, 35.52
+    ],
+    regimes: [
+        'T','T','T','T','T','T',
+        'T','L','L','C','T','T',
+        'T','T','C','C','C','T',
+        'L','L','L','T','T','T'
+    ]
+};
+
+// Cumulative PnL Chart
+const ctx1 = document.getElementById('cumulativePnlChart').getContext('2d');
+const crisisColor = 'rgba(224, 96, 96, 0.08)';
+
+new Chart(ctx1, {
+    type: 'line',
+    data: {
+        labels: cumulativePnlData.labels,
+        datasets: [{
+            label: 'Cumulative PnL ($M)',
+            data: cumulativePnlData.cumPnl,
+            borderColor: '#3ecfb4',
+            backgroundColor: 'rgba(62, 207, 180, 0.1)',
+            borderWidth: 2.5,
+            fill: true,
+            tension: 0.3,
+            pointRadius: 3,
+            pointBackgroundColor: cumulativePnlData.cumPnl.map(v => v >= 0 ? '#48b884' : '#e06060'),
+            pointBorderColor: 'transparent',
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(ctx) {
+                        return `PnL: $${ctx.parsed.y.toFixed(2)}M`;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                grid: { color: 'rgba(42, 62, 92, 0.4)' },
+                ticks: { color: '#5a6a7a', font: { size: 11 } }
+            },
+            y: {
+                grid: { color: 'rgba(42, 62, 92, 0.4)' },
+                ticks: {
+                    color: '#5a6a7a',
+                    font: { size: 11 },
+                    callback: function(v) { return '$' + v.toFixed(0) + 'M'; }
+                }
+            }
+        }
+    }
+});
+
+// Strategy Contribution Chart
+const ctx2 = document.getElementById('strategyChart').getContext('2d');
+const stratNames = ['Option Overlay', 'Directional L/S', 'Dispersion', 'Dynamic Vol', 'Vol Harvesting'];
+const stratPnl = [27.93, 9.01, -0.03, -0.16, -1.24];
+const stratColors = stratPnl.map(v => v >= 0 ? 'rgba(72, 184, 132, 0.7)' : 'rgba(224, 96, 96, 0.7)');
+const stratBorders = stratPnl.map(v => v >= 0 ? '#48b884' : '#e06060');
+
+new Chart(ctx2, {
+    type: 'bar',
+    data: {
+        labels: stratNames,
+        datasets: [{
+            label: 'Total PnL ($M)',
+            data: stratPnl,
+            backgroundColor: stratColors,
+            borderColor: stratBorders,
+            borderWidth: 1,
+            borderRadius: 4,
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(ctx) {
+                        return `PnL: $${ctx.parsed.x.toFixed(2)}M`;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                grid: { color: 'rgba(42, 62, 92, 0.4)' },
+                ticks: {
+                    color: '#5a6a7a',
+                    font: { size: 11 },
+                    callback: function(v) { return '$' + v + 'M'; }
+                }
+            },
+            y: {
+                grid: { display: false },
+                ticks: { color: '#8899aa', font: { size: 12, weight: 500 } }
+            }
+        }
+    }
+});
+</script>
+
+</body>
+</html>

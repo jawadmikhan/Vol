@@ -1,0 +1,101 @@
+###############################################################################
+# Systematic Volatility Portfolio — Docker Compose
+#
+# Services:
+#   1. timescaledb  — TimescaleDB (PostgreSQL + time-series extensions)
+#   2. ibgateway    — IB Gateway (headless, paper or live)
+#   3. vol-engine   — Python signal engine + data adapter
+#
+# Usage:
+#   cp .env.example .env        # fill in your IBKR credentials
+#   docker compose up -d        # start all services
+#   docker compose logs -f      # tail logs
+###############################################################################
+
+services:
+  # ---------------------------------------------------------------------------
+  # TimescaleDB — time-series database for ticks, signals, risk
+  # ---------------------------------------------------------------------------
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: vol-timescaledb
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: vol_db
+      POSTGRES_USER: vol_user
+      POSTGRES_PASSWORD: ${TSDB_PASSWORD:-vol_pass}
+    volumes:
+      - tsdb_data:/var/lib/postgresql/data
+      - ./infrastructure/db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vol_user -d vol_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # IB Gateway — headless IBKR connection
+  # Uses the community Docker image (gnzsnz/ib-gateway)
+  # ---------------------------------------------------------------------------
+  ibgateway:
+    image: ghcr.io/gnzsnz/ib-gateway:latest
+    container_name: vol-ibgateway
+    restart: unless-stopped
+    ports:
+      - "4001:4001"   # Live trading API
+      - "4002:4002"   # Paper trading API
+      - "5900:5900"   # VNC (for debugging — optional)
+    environment:
+      TWS_USERID: ${IBKR_USER}
+      TWS_PASSWORD: ${IBKR_PASSWORD}
+      TRADING_MODE: ${IBKR_TRADING_MODE:-paper}    # 'paper' or 'live'
+      TWS_ACCEPT_INCOMING: "yes"
+      READ_ONLY_API: "no"
+    volumes:
+      - ibgateway_data:/root/ibc
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 4002 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  # ---------------------------------------------------------------------------
+  # Vol Engine — Python application (signals, data adapter, orchestrator)
+  # ---------------------------------------------------------------------------
+  vol-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vol-engine
+    restart: unless-stopped
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      ibgateway:
+        condition: service_healthy
+    environment:
+      # TimescaleDB connection
+      TSDB_HOST: timescaledb
+      TSDB_PORT: 5432
+      TSDB_NAME: vol_db
+      TSDB_USER: vol_user
+      TSDB_PASSWORD: ${TSDB_PASSWORD:-vol_pass}
+      # IBKR Gateway connection
+      IBKR_HOST: ibgateway
+      IBKR_PORT: ${IBKR_PORT:-4002}
+      IBKR_CLIENT_ID: 1
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - ./:/app
+    ports:
+      - "8050:8050"   # Dashboard (Dash/Flask)
+
+volumes:
+  tsdb_data:
+    driver: local
+  ibgateway_data:
+    driver: local
