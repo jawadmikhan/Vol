@@ -1,15 +1,15 @@
 # Systematic Volatility Portfolio
 
-Interactive workflow dashboard and backtesting framework for a five-leg systematic volatility portfolio — from signal construction through execution, monitoring, rebalancing, and performance analysis.
+Interactive workflow dashboard and backtesting framework for a five-leg systematic volatility portfolio -from signal construction through execution, monitoring, rebalancing, and performance analysis.
 
 **Live site:** [jawadmikhan.github.io/Vol](https://jawadmikhan.github.io/Vol)
 
 | Page | Description | Link |
 |------|-------------|------|
 | Interactive Dashboard | 48-step workflow with Mermaid flowcharts, stage tables, task streams, blocker analysis | [index.html](https://jawadmikhan.github.io/Vol) |
-| Workflow Map | Full-page Mermaid process map — all 7 stages, 5 gates, 3 feedback loops | [workflow.html](https://jawadmikhan.github.io/Vol/workflow.html) |
-| Mock Portfolio | $250M portfolio implementation — 5 sub-strategies, Greeks, scenarios, 60-day timeline | [portfolio.html](https://jawadmikhan.github.io/Vol/portfolio.html) |
-| Backtest Results | Walk-forward backtest — PnL attribution, regime analysis, strategy contribution | [backtest.html](https://jawadmikhan.github.io/Vol/backtest.html) |
+| Workflow Map | Full-page Mermaid process map -all 7 stages, 5 gates, 3 feedback loops | [workflow.html](https://jawadmikhan.github.io/Vol/workflow.html) |
+| Mock Portfolio | $250M portfolio implementation -5 sub-strategies, Greeks, scenarios, 60-day timeline | [portfolio.html](https://jawadmikhan.github.io/Vol/portfolio.html) |
+| Backtest Results | Walk-forward backtest -PnL attribution, regime analysis, strategy contribution | [backtest.html](https://jawadmikhan.github.io/Vol/backtest.html) |
 
 ---
 
@@ -145,14 +145,14 @@ docker compose logs -f vol-engine
 
 | Component | Description |
 |-----------|-------------|
-| `infrastructure/ibkr/client.py` | IBKR API client — prices, option chains, VIX, streaming |
+| `infrastructure/ibkr/client.py` | IBKR API client -prices, option chains, VIX, streaming |
 | `infrastructure/ibkr/contracts.py` | Universe: SPX + 45 constituents with sector weights |
 | `infrastructure/ibkr/vol_surface.py` | Builds delta-parameterized IV surface from live chains |
 | `infrastructure/ibkr/regime.py` | Real-time regime classifier (Crisis / Transitional / Low Vol) |
 | `infrastructure/data_adapter.py` | Transforms IBKR data into the same dict strategies expect |
-| `infrastructure/db/schema.sql` | TimescaleDB schema — 11 hypertables, compression, continuous aggregates |
+| `infrastructure/db/schema.sql` | TimescaleDB schema -11 hypertables, compression, continuous aggregates |
 | `infrastructure/db/connection.py` | Connection pool and read/write helpers |
-| `infrastructure/run.py` | Live orchestrator — one-shot or scheduled during market hours |
+| `infrastructure/run.py` | Live orchestrator -one-shot or scheduled during market hours |
 
 ## Repository Structure
 
@@ -213,14 +213,14 @@ Vol/
 
 ## Reference Data
 
-All synthetic — no proprietary or live market data. Formatted to match OptionMetrics and FactSet conventions.
+All synthetic -no proprietary or live market data. Formatted to match OptionMetrics and FactSet conventions.
 
 | File | Description |
 |------|-------------|
-| `implied_vol_surface.csv` | 1,380 rows — 5 strikes x 6 tenors x 46 names |
-| `realized_vol_history.csv` | 1,260 days x 46 names — GARCH(1,1) simulated |
+| `implied_vol_surface.csv` | 1,380 rows -5 strikes x 6 tenors x 46 names |
+| `realized_vol_history.csv` | 1,260 days x 46 names -GARCH(1,1) simulated |
 | `correlation_matrix.csv` | 46x46 pairwise 90-day realized correlations |
-| `vol_regime_signals.csv` | 504 days — VIX term structure, VVIX, regime classification |
+| `vol_regime_signals.csv` | 504 days -VIX term structure, VVIX, regime classification |
 | `portfolio_constraints.json` | Investment Committee mandate in JSON format |
 | `option_overlay_specs.json` | Put/collar program specifications |
 
