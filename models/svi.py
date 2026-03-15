@@ -222,14 +222,27 @@ def svi_vol_at_delta(
     Returns:
         (implied_vol, log_moneyness) at the target delta.
     """
-    # Initial guess for k based on delta
+    # Initial guess for k based on delta using ATM vol
+    atm_v = params.atm_vol()
+    sqrt_t = np.sqrt(params.tenor)
+
     if is_call:
-        k = -0.5 * params.atm_vol() ** 2 * params.tenor + params.atm_vol() * np.sqrt(params.tenor) * norm.ppf(target_delta)
+        # For call delta: delta = N(d1), so d1 = N_inv(delta)
+        d1_target = norm.ppf(max(target_delta, 1e-6))
+        k = -d1_target * atm_v * sqrt_t + 0.5 * atm_v ** 2 * params.tenor
     else:
-        k = -0.5 * params.atm_vol() ** 2 * params.tenor + params.atm_vol() * np.sqrt(params.tenor) * norm.ppf(target_delta + 1.0)
+        # For put delta: delta = N(d1) - 1, so d1 = N_inv(delta + 1)
+        d1_target = norm.ppf(min(target_delta + 1.0, 1 - 1e-6))
+        k = -d1_target * atm_v * sqrt_t + 0.5 * atm_v ** 2 * params.tenor
+
+    # Clamp initial guess to reasonable range
+    k = np.clip(k, -1.5, 1.5)
 
     for _ in range(max_iter):
         vol = float(params.implied_vol(k))
+        if vol <= 0 or np.isnan(vol):
+            break
+
         delta = _bs_delta(k, vol, params.tenor, is_call)
         err = delta - target_delta
 
@@ -237,14 +250,21 @@ def svi_vol_at_delta(
             break
 
         # Numerical derivative dk/ddelta
-        dk = 0.001
-        delta_up = _bs_delta(k + dk, float(params.implied_vol(k + dk)), params.tenor, is_call)
+        dk = 0.0005
+        k_up = k + dk
+        vol_up = float(params.implied_vol(k_up))
+        delta_up = _bs_delta(k_up, vol_up, params.tenor, is_call)
         ddelta_dk = (delta_up - delta) / dk
 
         if abs(ddelta_dk) < 1e-12:
             break
 
-        k -= err / ddelta_dk
+        step = err / ddelta_dk
+        # Damped Newton to prevent overshooting
+        step = np.clip(step, -0.3, 0.3)
+        k -= step
+        # Keep k in reasonable range
+        k = np.clip(k, -2.0, 2.0)
 
     vol = float(params.implied_vol(k))
     return vol, k
