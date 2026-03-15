@@ -7,9 +7,9 @@ Interactive workflow dashboard and backtesting framework for a five-leg systemat
 | Page | Description | Link |
 |------|-------------|------|
 | Interactive Dashboard | 48-step workflow with Mermaid flowcharts, stage tables, task streams, blocker analysis | [index.html](https://jawadmikhan.github.io/Vol) |
-| Workflow Map | Full-page Mermaid process map -all 7 stages, 5 gates, 3 feedback loops | [workflow.html](https://jawadmikhan.github.io/Vol/workflow.html) |
-| Mock Portfolio | $250M portfolio implementation -5 sub-strategies, Greeks, scenarios, 60-day timeline | [portfolio.html](https://jawadmikhan.github.io/Vol/portfolio.html) |
-| Backtest Results | Walk-forward backtest -PnL attribution, regime analysis, strategy contribution | [backtest.html](https://jawadmikhan.github.io/Vol/backtest.html) |
+| Workflow Map | Full-page Mermaid process map - all 7 stages, 5 gates, 3 feedback loops | [workflow.html](https://jawadmikhan.github.io/Vol/workflow.html) |
+| Mock Portfolio | $250M portfolio implementation - 5 sub-strategies, Greeks, scenarios, 60-day timeline | [portfolio.html](https://jawadmikhan.github.io/Vol/portfolio.html) |
+| Backtest Results | Walk-forward backtest - PnL attribution, regime analysis, strategy contribution | [backtest.html](https://jawadmikhan.github.io/Vol/backtest.html) |
 
 ---
 
