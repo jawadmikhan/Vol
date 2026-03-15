@@ -260,19 +260,66 @@ class BacktestEngine:
         """
         Build the data dict for a single day, mimicking what strategies expect.
 
-        IV surface is scaled by current VIX relative to the base VIX assumption (18).
+        IV surface dynamics use SVI-inspired scaling:
+          - ATM level shifts with VIX
+          - Skew steepens in crisis (puts get more expensive)
+          - Term structure flattens / inverts in crisis
+          - Constituent vols react with beta to index vol moves
+
         Correlation matrix uses the base (could be enhanced with rolling computation).
         Regime signals use the current day's row.
         """
         baseline_vix = 18.0
         vix_ratio = current_vix / baseline_vix if baseline_vix > 0 else 1.0
-
-        # Scale implied vols by VIX ratio (higher VIX → higher IVs across the surface)
-        scaled_surface = base_iv_surface.copy()
-        scaled_surface["implied_vol"] = scaled_surface["implied_vol"] * vix_ratio
-
-        # Regime signals: just the current day as a single-row DataFrame
         regime_row = regime_df.iloc[[day_idx]].copy()
+        regime = regime_row.iloc[0].get("regime", "TRANSITIONAL")
+
+        scaled_surface = base_iv_surface.copy()
+
+        # SVI-informed surface dynamics
+        for idx, row in scaled_surface.iterrows():
+            base_iv = row["implied_vol"]
+            delta_label = row["strike_delta"]
+            tenor = row["tenor_months"]
+            is_index = row["name"] == "SPX_INDEX"
+
+            # 1. ATM level scales with VIX (index = 1:1, constituents = beta)
+            beta = 1.0 if is_index else 0.7 + np.random.uniform(-0.1, 0.1)
+            atm_shift = (vix_ratio - 1.0) * beta
+
+            # 2. Skew steepening in high-vol regimes
+            #    Puts get more expensive, calls get cheaper
+            #    Magnitude increases with VIX level (SVI rho becomes more negative)
+            skew_multiplier = 1.0
+            if regime == "CRISIS":
+                skew_effect = {
+                    "10D_PUT": 0.15,  "25D_PUT": 0.08, "ATM": 0.0,
+                    "25D_CALL": -0.03, "10D_CALL": -0.05,
+                }
+                skew_multiplier = 1.0 + skew_effect.get(delta_label, 0.0)
+            elif regime == "LOW_VOL_HARVESTING":
+                # Skew flattens in low vol
+                skew_effect = {
+                    "10D_PUT": -0.04, "25D_PUT": -0.02, "ATM": 0.0,
+                    "25D_CALL": 0.01, "10D_CALL": 0.02,
+                }
+                skew_multiplier = 1.0 + skew_effect.get(delta_label, 0.0)
+
+            # 3. Term structure effect
+            #    Crisis: front-end spikes more (backwardation)
+            #    Low vol: normal contango preserved
+            tenor_factor = 1.0
+            if regime == "CRISIS":
+                # Front month spikes more than back
+                tenor_factor = 1.0 + 0.08 * max(0, (6 - tenor) / 6)
+            elif regime == "LOW_VOL_HARVESTING":
+                # Slight contango
+                tenor_factor = 1.0 - 0.02 * max(0, (6 - tenor) / 6)
+
+            # Combine effects
+            new_iv = base_iv * (1.0 + atm_shift) * skew_multiplier * tenor_factor
+            new_iv = max(new_iv, 0.03)  # floor at 3%
+            scaled_surface.at[idx, "implied_vol"] = new_iv
 
         # Realized vol history: everything up to current day
         current_date = pd.to_datetime(regime_df.iloc[day_idx]["date"])
