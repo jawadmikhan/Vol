@@ -9,3 +9,7 @@ ib_insync>=0.9.86
 
 # TimescaleDB / PostgreSQL
 psycopg2-binary>=2.9.9
+
+# Dashboard
+dash>=2.14.0
+plotly>=5.18.0
